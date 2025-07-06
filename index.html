@@ -1,20 +1,728 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <Title>Always Improving</Title>
-    </head>
-    <body>
-        <div id="header">
-        <h1>Welcome to my page.  This is still under construction but check back soon</h1>
-            <div id="Nav">
-                <ul>
-                    <li><a href="https://www.instagram.com/puertorriqueneaux/">Instagram</a></li>
-                    <li><a href="https://www.facebook.com/profile.php?id=100090997216257">Facebook</a></li>
-                </ul>
-            </div>
-        </div>
-        <?php include 'RCForm.php';?>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Always Improving</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #2f4f49;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .company-name {
+            display: block;
+            font-size: 1.4em;
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .company-name:hover {
+            color: #667eea;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .upload-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .upload-box {
+            flex: 1;
+            min-width: 250px;
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-box:hover {
+            border-color: #667eea;
+            background: #f0f3ff;
+            transform: scale(1.02);
+        }
+
+        .upload-box.loaded {
+            border-color: #48bb78;
+            background: #e6fffa;
+        }
+
+        .upload-box h3 {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .upload-box p {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .upload-box input[type="file"] {
+            display: none;
+        }
+
+        .file-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .upload-box:hover .file-icon {
+            transform: scale(1.1);
+        }
+
+        .count-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #48bb78;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .upload-box.loaded .count-badge {
+            opacity: 1;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 30px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto 30px;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .analyze-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .analyze-btn.active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .results {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h4 {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .user-list {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .user-list h3 {
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-list h3 span {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+
+        .user-item {
+            padding: 12px;
+            background: white;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .user-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .export-btn {
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .export-btn:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            padding: 20px;
+            background: #fee;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* Scrollbar styling */
+        .user-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .user-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .user-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .user-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-section">
+            <img src="https://img1.wsimg.com/isteam/ip/17da66aa-05e0-4e17-aec0-570151a3c322/blob-f3b648f.png/:/rs=w:198,h:112,cg:true,m/cr=w:198,h:112/qt=q:95" alt="Calculated Decisions Logo" class="logo">
+            <a href="https://calculated-decisions.com/" class="company-name">Calculated Decisions</a>
         </div>
-    </body>
+        
+        <h1>Instagram Follower Analyzer</h1>
+        <p class="subtitle">Find out who doesn't follow you back</p>
+
+        <div class="upload-section">
+            <label class="upload-box" id="followersBox">
+                <div class="file-icon">👥</div>
+                <h3>Followers List</h3>
+                <p>Upload your followers file (JSON/CSV)</p>
+                <input type="file" id="followersInput" accept=".json,.csv,.txt">
+                <div class="count-badge" id="followersCount"></div>
+            </label>
+
+            <label class="upload-box" id="followingBox">
+                <div class="file-icon">➕</div>
+                <h3>Following List</h3>
+                <p>Upload your following file (JSON/CSV)</p>
+                <input type="file" id="followingInput" accept=".json,.csv,.txt">
+                <div class="count-badge" id="followingCount"></div>
+            </label>
+        </div>
+
+        <button class="analyze-btn" id="analyzeBtn">Analyze</button>
+
+        <div class="error" id="errorMsg"></div>
+
+        <div class="results" id="results">
+            <div class="stats">
+                <div class="stat-card">
+                    <h4>Total Followers</h4>
+                    <div class="number" id="totalFollowers">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Total Following</h4>
+                    <div class="number" id="totalFollowing">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Don't Follow Back</h4>
+                    <div class="number" id="notFollowingBack">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Mutual Followers</h4>
+                    <div class="number" id="mutualFollowers">0</div>
+                </div>
+            </div>
+
+            <div class="user-list">
+                <h3>People who don't follow you back <span id="unfollowCount">0</span></h3>
+                <div id="unfollowersList"></div>
+            </div>
+
+            <button class="export-btn" id="exportBtn">Export Results as CSV</button>
+        </div>
+    </div>
+
+    <script>
+        let followersData = [];
+        let followingData = [];
+        let nonFollowers = [];
+
+        // File input handlers
+        document.getElementById('followersInput').addEventListener('change', function(e) {
+            handleFileUpload(e, 'followers');
+        });
+
+        document.getElementById('followingInput').addEventListener('change', function(e) {
+            handleFileUpload(e, 'following');
+        });
+
+        document.getElementById('analyzeBtn').addEventListener('click', analyzeData);
+        
+        // Export button handler
+        document.getElementById('exportBtn').addEventListener('click', exportResults);
+
+        async function handleFileUpload(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const content = await readFile(file);
+                const data = parseFileContent(content, file.name);
+                
+                if (type === 'followers') {
+                    followersData = data;
+                    document.getElementById('followersBox').classList.add('loaded');
+                    document.getElementById('followersCount').textContent = data.length;
+                } else {
+                    followingData = data;
+                    document.getElementById('followingBox').classList.add('loaded');
+                    document.getElementById('followingCount').textContent = data.length;
+                }
+
+                // Enable analyze button if both files are loaded
+                if (followersData.length > 0 && followingData.length > 0) {
+                    document.getElementById('analyzeBtn').classList.add('active');
+                }
+
+                hideError();
+            } catch (error) {
+                showError(`Error reading ${type} file: ${error.message}`);
+            }
+        }
+
+        function readFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+
+        function parseFileContent(content, filename) {
+            try {
+                // Try parsing as JSON first
+                if (filename.endsWith('.json')) {
+                    const jsonData = JSON.parse(content);
+                    
+                    // Handle different JSON structures
+                    if (Array.isArray(jsonData)) {
+                        return extractUsernames(jsonData);
+                    } else if (jsonData.relationships_following) {
+                        return extractUsernames(jsonData.relationships_following);
+                    } else if (jsonData.relationships_followers) {
+                        return extractUsernames(jsonData.relationships_followers);
+                    } else if (jsonData.followers || jsonData.following) {
+                        // Handle alternative JSON structure
+                        return extractUsernames(jsonData.followers || jsonData.following);
+                    } else {
+                        // Try to find any array in the JSON
+                        const arrays = findArraysInObject(jsonData);
+                        if (arrays.length > 0) {
+                            return extractUsernames(arrays[0]);
+                        }
+                        throw new Error('Unrecognized JSON structure');
+                    }
+                }
+                
+                // Parse as CSV
+                else if (filename.endsWith('.csv')) {
+                    return parseCSV(content);
+                }
+                
+                // Try to parse as text file with usernames
+                else if (filename.endsWith('.txt')) {
+                    return content.split('\n').filter(line => line.trim()).map(line => line.trim());
+                }
+                
+                throw new Error('Unsupported file format. Please use .json, .csv, or .txt files.');
+            } catch (error) {
+                throw new Error('Failed to parse file: ' + error.message);
+            }
+        }
+
+        function findArraysInObject(obj) {
+            const arrays = [];
+            for (const key in obj) {
+                if (Array.isArray(obj[key])) {
+                    arrays.push(obj[key]);
+                } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    arrays.push(...findArraysInObject(obj[key]));
+                }
+            }
+            return arrays;
+        }
+
+        function extractUsernames(data) {
+            const usernames = [];
+            
+            // If it's a simple array of strings, return it
+            if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'string') {
+                return data;
+            }
+            
+            // Recursive function to extract usernames from nested structures
+            function extract(item) {
+                if (typeof item === 'string') {
+                    usernames.push(item);
+                } else if (Array.isArray(item)) {
+                    item.forEach(extract);
+                } else if (item && typeof item === 'object') {
+                    // Check for Instagram's string_list_data format
+                    if (item.string_list_data && Array.isArray(item.string_list_data)) {
+                        item.string_list_data.forEach(user => {
+                            if (user.value) usernames.push(user.value);
+                            if (user.href && user.href.includes('instagram.com/')) {
+                                const username = user.href.split('instagram.com/')[1].replace('/', '');
+                                if (username) usernames.push(username);
+                            }
+                        });
+                    }
+                    // Check for direct username field
+                    else if (item.username) {
+                        usernames.push(item.username);
+                    }
+                    // Check for value field
+                    else if (item.value) {
+                        usernames.push(item.value);
+                    }
+                    // Check for title field (some exports use this)
+                    else if (item.title) {
+                        usernames.push(item.title);
+                    }
+                    // Check for name field
+                    else if (item.name) {
+                        usernames.push(item.name);
+                    }
+                    // Recursively check all properties
+                    else {
+                        Object.values(item).forEach(val => {
+                            if (val && typeof val === 'object') {
+                                extract(val);
+                            }
+                        });
+                    }
+                }
+            }
+            
+            extract(data);
+            
+            // Remove duplicates and empty values
+            return [...new Set(usernames.filter(u => u && u.trim()))];
+        }
+
+        function parseCSV(content) {
+            const lines = content.split('\n').filter(line => line.trim());
+            const usernames = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line) {
+                    // Skip header if it exists
+                    if (i === 0 && (line.toLowerCase().includes('username') || line.toLowerCase().includes('user'))) {
+                        continue;
+                    }
+                    // Extract username (handle quoted values)
+                    const username = line.replace(/^["']|["']$/g, '').split(',')[0].trim();
+                    if (username) {
+                        usernames.push(username);
+                    }
+                }
+            }
+            
+            return usernames;
+        }
+
+        function analyzeData() {
+            if (followersData.length === 0 || followingData.length === 0) {
+                showError('Please upload both files before analyzing');
+                return;
+            }
+
+            // Create a Set of followers for faster lookup
+            const followersSet = new Set(followersData.map(u => u.toLowerCase()));
+            
+            // Find people you follow who don't follow you back
+            nonFollowers = followingData.filter(username => 
+                !followersSet.has(username.toLowerCase())
+            );
+
+            // Calculate mutual followers
+            const mutualCount = followingData.filter(username => 
+                followersSet.has(username.toLowerCase())
+            ).length;
+
+            // Update statistics
+            document.getElementById('totalFollowers').textContent = followersData.length;
+            document.getElementById('totalFollowing').textContent = followingData.length;
+            document.getElementById('notFollowingBack').textContent = nonFollowers.length;
+            document.getElementById('mutualFollowers').textContent = mutualCount;
+            document.getElementById('unfollowCount').textContent = nonFollowers.length;
+
+            // Display non-followers list
+            const listContainer = document.getElementById('unfollowersList');
+            listContainer.innerHTML = '';
+            
+            nonFollowers.forEach(username => {
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                userItem.innerHTML = `
+                    <div class="user-avatar">${username.charAt(0).toUpperCase()}</div>
+                    <div>${username}</div>
+                `;
+                listContainer.appendChild(userItem);
+            });
+
+            // Show results
+            document.getElementById('results').style.display = 'block';
+            
+            // Smooth scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function exportResults() {
+            if (nonFollowers.length === 0) {
+                showError('No data to export');
+                return;
+            }
+
+            try {
+                const csv = 'Username\n' + nonFollowers.join('\n');
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                
+                // Check if browser supports msSaveBlob (for IE)
+                if (navigator.msSaveBlob) {
+                    navigator.msSaveBlob(blob, 'instagram_non_followers.csv');
+                    return;
+                }
+                
+                // Create object URL
+                const url = window.URL.createObjectURL(blob);
+                
+                // Create temporary link element
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'instagram_non_followers.csv');
+                link.style.visibility = 'hidden';
+                
+                // Append to body, click, and remove
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Clean up the URL object
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                
+                // Fallback method - open in new window
+                try {
+                    const csv = 'Username\n' + nonFollowers.join('\n');
+                    const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+                    const newWindow = window.open(dataUri);
+                    
+                    if (!newWindow) {
+                        // If popup blocked, create a visible download link
+                        showError('Please disable popup blocker or use the download link below');
+                        createDownloadLink(csv);
+                    }
+                } catch (fallbackError) {
+                    console.error('Fallback error:', fallbackError);
+                    showError('Export failed. Creating download link...');
+                    createDownloadLink(nonFollowers.join('\n'));
+                }
+            }
+        }
+        
+        function createDownloadLink(csvContent) {
+            const resultsDiv = document.getElementById('results');
+            
+            // Remove existing download link if any
+            const existingLink = document.getElementById('downloadLink');
+            if (existingLink) {
+                existingLink.remove();
+            }
+            
+            // Create a visible download link
+            const linkContainer = document.createElement('div');
+            linkContainer.id = 'downloadLink';
+            linkContainer.style.cssText = 'margin-top: 20px; padding: 20px; background: #e8f5e9; border-radius: 10px; text-align: center;';
+            
+            const link = document.createElement('a');
+            link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('Username\n' + csvContent);
+            link.download = 'instagram_non_followers.csv';
+            link.textContent = 'Click here to download CSV';
+            link.style.cssText = 'color: #2e7d32; font-weight: bold; text-decoration: underline;';
+            
+            linkContainer.appendChild(link);
+            resultsDiv.appendChild(linkContainer);
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('errorMsg');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+    </script>
+</body>
 </html>
