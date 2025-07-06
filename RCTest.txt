@@ -1,0 +1,2 @@
+Client Full Name	Client Address 	E-Mail	Event Name	Venue Address	Date & Time to Deliver Items	Event Date and Time	Client City & Zip	Phone number	Venue	Venue Contact Info	Date & Time to pick up items
+Edward Scissorhands	123 chop st	cutem@gmail.com	barbershop 9	456 rock rd	7/25/2024 11:00	7/25/2024 15:00	Clifford 18470	607-372-9999	elk mountain	570-354-5555	7/25/2024 20:00
