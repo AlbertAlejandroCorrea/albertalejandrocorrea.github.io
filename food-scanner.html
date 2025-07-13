@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Barcode Scanner with Nutrition - Calculated Decisions</title>
-    <script src="https://cdn.jsdelivr.net/npm/@pixelverse/strichjs/dist/strich.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.2/dist/quagga.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -386,10 +386,15 @@
             background: rgba(0, 0, 0, 0.3);
         }
 
-        .strich-scanner-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
+        #scanner canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        #scanner canvas.drawingBuffer {
+            position: absolute;
+            top: 0;
+            left: 0;
         }
     </style>
 </head>
@@ -471,13 +476,8 @@
 
     <script>
         let foodInventory = [];
-        let barcodeScanner = null;
+        let scanning = false;
         let pendingProduct = null;
-
-        // Initialize Strich
-        StrichSDK.initialize(
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZW1vLXVzZXIiLCJleHAiOjQ4MzczNTA4OTd9.U7d9-YmSBrUCEB5zOcB54SrI-CuNKKQPF-UhovpUVmM'
-        );
 
         // Load saved inventory
         function loadInventory() {
@@ -624,8 +624,337 @@
             }
         }
 
-        // Start scanner
+        // Initialize Quagga2 scanner
+        function initializeScanner() {
+            if (scanning) return;
+            
+            scanning = true;
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'block';
+            
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#scanner'),
+                    constraints: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: "environment"
+                    },
+                    area: { // Restrict scanning area for better performance
+                        top: "10%",
+                        right: "10%",
+                        left: "10%",
+                        bottom: "10%"
+                    }
+                },
+                frequency: 10,
+                decoder: {
+                    readers: [
+                        "ean_reader",
+                        "ean_8_reader",
+                        "upc_reader",
+                        "upc_e_reader",
+                        "code_128_reader",
+                        "code_39_reader",
+                        "code_93_reader",
+                        "i2of5_reader"
+                    ],
+                    debug: {
+                        drawBoundingBox: true,
+                        showFrequency: false,
+                        drawScanline: true,
+                        showPattern: false
+                    }
+                },
+                locate: true,
+                locator: {
+                    halfSample: true,
+                    patchSize: "medium",
+                    debug: {
+                        showCanvas: false,
+                        showPatches: false,
+                        showFoundPatches: false,
+                        showSkeleton: false,
+                        showLabels: false,
+                        showPatchLabels: false,
+                        showRemainingPatchLabels: false,
+                        boxFromPatches: {
+                            showTransformed: false,
+                            showTransformedBox: false,
+                            showBB: false
+                        }
+                    }
+                }
+            }, function(err) {
+                if (err) {
+                    console.error('Quagga2 init error:', err);
+                    showStatus('Camera access denied or not available', 'error');
+                    scanning = false;
+                    document.getElementById('startBtn').style.display = 'block';
+                    document.getElementById('stopBtn').style.display = 'none';
+                    return;
+                }
+                console.log("Scanner initialized successfully");
+                Quagga.start();
+            });
+
+            // Process detected barcodes with visual feedback
+            Quagga.onProcessed(function(result) {
+                var drawingCtx = Quagga.canvas.ctx.overlay,
+                    drawingCanvas = Quagga.canvas.dom.overlay;
+
+                if (result) {
+                    if (result.boxes) {
+                        drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
+                        result.boxes.filter(function (box) {
+                            return box !== result.box;
+                        }).forEach(function (box) {
+                            Quagga.ImageDebug.drawPath(box, {x: 0, y: 1}, drawingCtx, {color: "rgba(0, 255, 0, 0.5)", lineWidth: 2});
+                        });
+                    }
+
+                    if (result.box) {
+                        Quagga.ImageDebug.drawPath(result.box, {x: 0, y: 1}, drawingCtx, {color: "#00F", lineWidth: 2});
+                    }
+
+                    if (result.codeResult && result.codeResult.code) {
+                        Quagga.ImageDebug.drawPath(result.line, {x: 'x', y: 'y'}, drawingCtx, {color: 'red', lineWidth: 3});
+                    }
+                }
+            });
+
+            // Handle detected barcodes with confidence checking
+            let detectionBuffer = [];
+            
+            Quagga.onDetected(async function(result) {
+                const code = result.codeResult.code;
+                const format = result.codeResult.format;
+                const confidence = result.codeResult.decodedCodes
+                    .filter(x => x.error !== undefined)
+                    .reduce((acc, x) => acc + (1.0 - x.error), 0) / result.codeResult.decodedCodes.length;
+                
+                console.log(`Detected ${format} code: ${code} with confidence: ${confidence}`);
+                
+                // Only accept high confidence reads
+                if (confidence < 0.7) {
+                    return;
+                }
+                
+                // Add to buffer
+                detectionBuffer.push(code);
+                
+                // Keep only last 5 detections
+                if (detectionBuffer.length > 5) {
+                    detectionBuffer.shift();
+                }
+                
+                // Check if we have consistent reads
+                const lastThree = detectionBuffer.slice(-3);
+                if (lastThree.length === 3 && lastThree.every(c => c === code)) {
+                    console.log('Consistent barcode detected:', code);
+                    
+                    // Stop scanning
+                    Quagga.stop();
+                    scanning = false;
+                    document.getElementById('startBtn').style.display = 'block';
+                    document.getElementById('stopBtn').style.display = 'none';
+                    
+                    // Reset detection buffer
+                    detectionBuffer = [];
+                    
+                    // Show scanning animation
+                    showStatus('Scanning barcode...', 'success');
+                    
+                    // Fetch product info
+                    const productInfo = await fetchProductInfo(code);
+                    showProductModal(productInfo);
+                }
+            });
+        }
+
+        // Start scanner button
+        document.getElementById('startBtn').addEventListener('click', initializeScanner);
+
+        // Stop scanner button
+        document.getElementById('stopBtn').addEventListener('click', function() {
+            if (scanning) {
+                Quagga.stop();
+                scanning = false;
+                document.getElementById('startBtn').style.display = 'block';
+                document.getElementById('stopBtn').style.display = 'none';
+            }
+        });
+
+        // Add manual item
+        function addManualItem() {
+            const name = document.getElementById('foodName').value.trim();
+            const barcode = document.getElementById('barcode').value.trim();
+            const brand = document.getElementById('brand').value.trim();
+            const quantity = parseInt(document.getElementById('quantity').value);
+
+            if (!name) {
+                showStatus('Please enter a food name', 'error');
+                return;
+            }
+
+            const foodItem = {
+                id: Date.now(),
+                barcode: barcode || 'N/A',
+                name: name,
+                brand: brand || 'Generic',
+                quantity: quantity,
+                nutrition: {
+                    calories: parseFloat(document.getElementById('calories').value) || 0,
+                    protein: parseFloat(document.getElementById('protein').value) || 0,
+                    carbs: parseFloat(document.getElementById('carbs').value) || 0,
+                    fat: parseFloat(document.getElementById('fat').value) || 0,
+                    fiber: parseFloat(document.getElementById('fiber').value) || 0,
+                    sugar: parseFloat(document.getElementById('sugar').value) || 0,
+                    sodium: 0
+                },
+                dateAdded: new Date().toISOString()
+            };
+
+            foodInventory.push(foodItem);
+            saveInventory();
+            updateDisplay();
+            
+            // Clear form
+            document.getElementById('foodName').value = '';
+            document.getElementById('barcode').value = '';
+            document.getElementById('brand').value = '';
+            document.getElementById('quantity').value = '1';
+            document.getElementById('calories').value = '';
+            document.getElementById('protein').value = '';
+            document.getElementById('carbs').value = '';
+            document.getElementById('fat').value = '';
+            document.getElementById('fiber').value = '';
+            document.getElementById('sugar').value = '';
+            
+            showStatus('Item added successfully');
+        }
+
+        // Delete item
+        function deleteItem(id) {
+            foodInventory = foodInventory.filter(item => item.id !== id);
+            saveInventory();
+            updateDisplay();
+            showStatus('Item removed');
+        }
+
+        // Update display
+        function updateDisplay() {
+            const container = document.getElementById('foodItems');
+            
+            if (foodInventory.length === 0) {
+                container.innerHTML = '<div class="empty-state">No items in inventory. Start scanning or add items manually!</div>';
+                return;
+            }
+
+            container.innerHTML = foodInventory.map(item => {
+                let nutritionHtml = '';
+                if (item.nutrition && item.nutrition.calories !== undefined) {
+                    nutritionHtml = `
+                        <div class="nutrition-grid">
+                            <div class="nutrition-item">
+                                <div class="nutrition-value">${item.nutrition.calories}</div>
+                                <div class="nutrition-label">Calories</div>
+                            </div>
+                            <div class="nutrition-item">
+                                <div class="nutrition-value">${item.nutrition.protein}g</div>
+                                <div class="nutrition-label">Protein</div>
+                            </div>
+                            <div class="nutrition-item">
+                                <div class="nutrition-value">${item.nutrition.carbs}g</div>
+                                <div class="nutrition-label">Carbs</div>
+                            </div>
+                            <div class="nutrition-item">
+                                <div class="nutrition-value">${item.nutrition.fat}g</div>
+                                <div class="nutrition-label">Fat</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <div class="food-item">
+                        <div class="food-header">
+                            <div class="food-info">
+                                <div class="food-name">${item.name}</div>
+                                <div class="food-details">
+                                    ${item.brand} • Qty: ${item.quantity} • Barcode: ${item.barcode}
+                                </div>
+                            </div>
+                            <button class="delete-btn" onclick="deleteItem(${item.id})">Delete</button>
+                        </div>
+                        ${nutritionHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            if (foodInventory.length === 0) {
+                showStatus('No items to export', 'error');
+                return;
+            }
+
+            const headers = ['Name', 'Brand', 'Barcode', 'Quantity', 'Calories', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Fiber (g)', 'Sugar (g)', 'Sodium (mg)', 'Date Added'];
+            const rows = foodInventory.map(item => [
+                item.name,
+                item.brand || '',
+                item.barcode,
+                item.quantity,
+                item.nutrition?.calories || '',
+                item.nutrition?.protein || '',
+                item.nutrition?.carbs || '',
+                item.nutrition?.fat || '',
+                item.nutrition?.fiber || '',
+                item.nutrition?.sugar || '',
+                item.nutrition?.sodium || '',
+                new Date(item.dateAdded).toLocaleDateString()
+            ]);
+
+            let csvContent = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csvContent += row.map(cell => `"${cell}"`).join(',') + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `food_inventory_nutrition_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            showStatus('Inventory exported successfully');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadInventory();
+        });
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('productModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script> Start scanner
         document.getElementById('startBtn').addEventListener('click', async function() {
+            if (typeof StrichSDK === 'undefined') {
+                showStatus('Scanner not available. Please use manual entry.', 'error');
+                return;
+            }
+            
             document.getElementById('startBtn').style.display = 'none';
             document.getElementById('stopBtn').style.display = 'block';
             
@@ -633,27 +962,36 @@
                 const configuration = {
                     selector: '#scanner',
                     engine: {
-                        symbologies: ['Code128', 'EAN13', 'EAN8', 'UPCA', 'UPCE', 'Code39', 'DataMatrix', 'QRCode']
+                        symbologies: ['code128', 'ean13', 'ean8', 'upca', 'upce', 'code39']
                     },
                     locator: {
-                        minLength: 20
+                        regionOfInterest: {
+                            left: 0.1,
+                            top: 0.3,
+                            right: 0.9,
+                            bottom: 0.7
+                        }
                     },
-                    overlay: {
-                        showCameraSelector: true,
-                        showFlashlight: true,
-                        showTextHints: true
+                    feedback: {
+                        audio: true,
+                        vibration: true
                     }
                 };
                 
                 barcodeScanner = new StrichSDK.BarcodeReader(configuration);
                 
-                await barcodeScanner.initialize();
-                await barcodeScanner.start();
-                
                 barcodeScanner.detected = async (detections) => {
                     if (detections.length > 0) {
                         const code = detections[0].data;
-                        await barcodeScanner.stop();
+                        console.log('Barcode detected:', code);
+                        
+                        // Stop scanner
+                        try {
+                            await barcodeScanner.stop();
+                        } catch (e) {
+                            console.error('Error stopping scanner:', e);
+                        }
+                        
                         document.getElementById('startBtn').style.display = 'block';
                         document.getElementById('stopBtn').style.display = 'none';
                         
@@ -663,11 +1001,21 @@
                     }
                 };
                 
+                await barcodeScanner.initialize();
+                await barcodeScanner.start();
+                
+                console.log('Scanner started successfully');
+                
             } catch (error) {
                 console.error('Error starting scanner:', error);
                 showStatus('Camera access denied or error occurred', 'error');
                 document.getElementById('startBtn').style.display = 'block';
                 document.getElementById('stopBtn').style.display = 'none';
+                
+                // If Strich fails, offer to try the barcode manually
+                if (error.message && error.message.includes('license')) {
+                    showStatus('Scanner demo expired. Please enter barcode manually.', 'error');
+                }
             }
         });
 
