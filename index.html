@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Always Improving</title>
+    <title>My Apps - Alberto Alejandro Correa</title>
     <style>
         * {
             margin: 0;
@@ -11,718 +12,459 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #2f4f49;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
 
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 800px;
-            width: 100%;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            transform: translateY(0);
-            transition: all 0.3s ease;
-        }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #0a0a0a;
+        color: #ffffff;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
 
-        .container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-        }
+    /* Animated background */
+    .bg-animation {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        overflow: hidden;
+    }
 
+    .bg-animation::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(74, 144, 226, 0.1) 0%, transparent 70%);
+        animation: rotate 30s linear infinite;
+    }
+
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    header {
+        background: rgba(26, 26, 46, 0.9);
+        backdrop-filter: blur(10px);
+        padding: 30px 0;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 10;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #4a90e2, #7b68ee);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: glow 3s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+        0%, 100% { filter: brightness(1); }
+        50% { filter: brightness(1.2); }
+    }
+
+    .subtitle {
+        color: #888;
+        font-size: 1.1rem;
+    }
+
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 60px 20px;
+    }
+
+    .view-toggle {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 40px;
+        gap: 10px;
+    }
+
+    .toggle-btn {
+        padding: 12px 24px;
+        border: none;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+
+    .toggle-btn.active {
+        background: linear-gradient(135deg, #4a90e2, #7b68ee);
+        transform: scale(1.05);
+    }
+
+    .toggle-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Grid View */
+    .apps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .app-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 30px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .app-card::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(135deg, #4a90e2, #7b68ee, #ff6b6b);
+        border-radius: 20px;
+        opacity: 0;
+        z-index: -1;
+        transition: opacity 0.3s ease;
+    }
+
+    .app-card:hover::before {
+        opacity: 1;
+    }
+
+    .app-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .app-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .app-title {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        color: #fff;
+    }
+
+    .app-description {
+        color: #aaa;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .app-features {
+        list-style: none;
+        margin-bottom: 20px;
+    }
+
+    .app-features li {
+        padding: 5px 0;
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .app-features li::before {
+        content: '✓ ';
+        color: #4a90e2;
+        font-weight: bold;
+    }
+
+    .app-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4a90e2, #7b68ee);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Iframe View */
+    .iframe-container {
+        display: none;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        overflow: hidden;
+        height: 80vh;
+        position: relative;
+    }
+
+    .iframe-header {
+        background: rgba(26, 26, 46, 0.9);
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .iframe-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .close-iframe {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .close-iframe:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    iframe {
+        width: 100%;
+        height: calc(100% - 60px);
+        border: none;
+        background: white;
+    }
+
+    /* Instructions */
+    .setup-instructions {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 30px;
+        margin-top: 60px;
+    }
+
+    .setup-instructions h2 {
+        color: #4a90e2;
+        margin-bottom: 20px;
+    }
+
+    .setup-instructions code {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+    }
+
+    .code-block {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 20px;
+        border-radius: 10px;
+        margin: 15px 0;
+        overflow-x: auto;
+    }
+
+    .code-block pre {
+        margin: 0;
+        color: #fff;
+        font-family: 'Courier New', monospace;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
         h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            text-align: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 2rem;
         }
+        
+        .apps-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .iframe-container {
+            height: 70vh;
+        }
+    }
+</style>
 
-        .logo-section {
-            text-align: center;
-            margin-bottom: 30px;
-        }
 
-        .logo {
-            width: 120px;
-            height: auto;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
-        .company-name {
-            display: block;
-            font-size: 1.4em;
-            color: #333;
-            text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 20px;
-            transition: color 0.3s ease;
-        }
-
-        .company-name:hover {
-            color: #667eea;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 40px;
-            font-size: 1.1em;
-        }
-
-        .upload-section {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .upload-box {
-            flex: 1;
-            min-width: 250px;
-            background: #f8f9fa;
-            border: 2px dashed #ddd;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .upload-box:hover {
-            border-color: #667eea;
-            background: #f0f3ff;
-            transform: scale(1.02);
-        }
-
-        .upload-box.loaded {
-            border-color: #48bb78;
-            background: #e6fffa;
-        }
-
-        .upload-box h3 {
-            color: #555;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
-
-        .upload-box p {
-            color: #888;
-            font-size: 0.9em;
-        }
-
-        .upload-box input[type="file"] {
-            display: none;
-        }
-
-        .file-icon {
-            font-size: 3em;
-            margin-bottom: 10px;
-            transition: transform 0.3s ease;
-        }
-
-        .upload-box:hover .file-icon {
-            transform: scale(1.1);
-        }
-
-        .count-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #48bb78;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .upload-box.loaded .count-badge {
-            opacity: 1;
-        }
-
-        .analyze-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            border-radius: 30px;
-            cursor: pointer;
-            display: block;
-            margin: 0 auto 30px;
-            transition: all 0.3s ease;
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-        .analyze-btn.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .analyze-btn.active:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .results {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-card h4 {
-            font-size: 0.9em;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-
-        .stat-card .number {
-            font-size: 2.5em;
-            font-weight: bold;
-        }
-
-        .user-list {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            max-height: 400px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-        }
-
-        .user-list h3 {
-            margin-bottom: 20px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-list h3 span {
-            background: #e74c3c;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8em;
-        }
-
-        .user-item {
-            padding: 12px;
-            background: white;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.2s ease;
-        }
-
-        .user-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-
-        .export-btn {
-            background: #48bb78;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .export-btn:hover {
-            background: #38a169;
-            transform: translateY(-2px);
-        }
-
-        .error {
-            color: #e74c3c;
-            text-align: center;
-            padding: 20px;
-            background: #fee;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        /* Scrollbar styling */
-        .user-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .user-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .user-list::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-        }
-
-        .user-list::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo-section">
-            <img src="https://img1.wsimg.com/isteam/ip/17da66aa-05e0-4e17-aec0-570151a3c322/blob-f3b648f.png/:/rs=w:198,h:112,cg:true,m/cr=w:198,h:112/qt=q:95" alt="Calculated Decisions Logo" class="logo">
-            <a href="https://calculated-decisions.com/" class="company-name">Calculated Decisions</a>
-        </div>
-        
-        <h1>Instagram Follower Analyzer</h1>
-        <p class="subtitle">Find out who doesn't follow you back</p>
+    <div class="bg-animation"></div>
 
-        <div class="upload-section">
-            <label class="upload-box" id="followersBox">
-                <div class="file-icon">👥</div>
-                <h3>Followers List</h3>
-                <p>Upload your followers file (JSON/CSV)</p>
-                <input type="file" id="followersInput" accept=".json,.csv,.txt">
-                <div class="count-badge" id="followersCount"></div>
-            </label>
 
-            <label class="upload-box" id="followingBox">
-                <div class="file-icon">➕</div>
-                <h3>Following List</h3>
-                <p>Upload your following file (JSON/CSV)</p>
-                <input type="file" id="followingInput" accept=".json,.csv,.txt">
-                <div class="count-badge" id="followingCount"></div>
-            </label>
-        </div>
+<header>
+    <h1>My Web Applications</h1>
+    <p class="subtitle">A collection of useful tools and applications</p>
+</header>
 
-        <button class="analyze-btn" id="analyzeBtn">Analyze</button>
-
-        <div class="error" id="errorMsg"></div>
-
-        <div class="results" id="results">
-            <div class="stats">
-                <div class="stat-card">
-                    <h4>Total Followers</h4>
-                    <div class="number" id="totalFollowers">0</div>
-                </div>
-                <div class="stat-card">
-                    <h4>Total Following</h4>
-                    <div class="number" id="totalFollowing">0</div>
-                </div>
-                <div class="stat-card">
-                    <h4>Don't Follow Back</h4>
-                    <div class="number" id="notFollowingBack">0</div>
-                </div>
-                <div class="stat-card">
-                    <h4>Mutual Followers</h4>
-                    <div class="number" id="mutualFollowers">0</div>
-                </div>
-            </div>
-
-            <div class="user-list">
-                <h3>People who don't follow you back <span id="unfollowCount">0</span></h3>
-                <div id="unfollowersList"></div>
-            </div>
-
-            <button class="export-btn" id="exportBtn">Export Results as CSV</button>
-        </div>
+<main>
+    <div class="view-toggle">
+        <button class="toggle-btn active" onclick="showGridView()">Grid View</button>
+        <button class="toggle-btn" onclick="showIframeView()">Embedded View</button>
     </div>
 
-    <script>
-        let followersData = [];
-        let followingData = [];
-        let nonFollowers = [];
+    <!-- Grid View -->
+    <div id="gridView" class="apps-grid">
+        <!-- App 1: Food Scanner -->
+        <div class="app-card">
+            <span class="app-icon">🍎</span>
+            <h3 class="app-title">Food Scanner & Nutrition Tracker</h3>
+            <p class="app-description">
+                Scan barcodes to catalog your food inventory and track nutritional information for your health goals.
+            </p>
+            <ul class="app-features">
+                <li>Barcode scanning with camera</li>
+                <li>Automatic nutrition lookup</li>
+                <li>Export to CSV format</li>
+                <li>Track calories & macros</li>
+            </ul>
+            <div class="app-buttons">
+                <a href="food-scanner.html" class="btn btn-primary">Open App</a>
+                <button class="btn btn-secondary" onclick="loadInIframe('Food Scanner', 'food-scanner.html')">Preview</button>
+            </div>
+        </div>
 
-        // File input handlers
-        document.getElementById('followersInput').addEventListener('change', function(e) {
-            handleFileUpload(e, 'followers');
-        });
+        <!-- App 2: Your Other App -->
+        <div class="app-card">
+            <span class="app-icon">🚀</span>
+            <h3 class="app-title">Instagram Follower Analyzer</h3>
+            <p class="app-description">
+                Takes your follower list and checks it against your following list to find out who doesn't follow you back
+            </p>
+            <ul class="app-features">
+                <li>Works on Mobile or Web</li>
+                <li>Works with JSON, HTML, and TXT files</li>
+                <li>Exports to CSV</li>
+                <li>More features coming soon</li>
+            </ul>
+            <div class="app-buttons">
+                <a href="instagram-follower-analyzer.html" class="btn btn-primary">Open App</a>
+                <button class="btn btn-secondary" onclick="loadInIframe('Instagram Follower Analyzer', 'instagram-follower-analyzer.html')">Preview</button>
+            </div>
+        </div>
 
-        document.getElementById('followingInput').addEventListener('change', function(e) {
-            handleFileUpload(e, 'following');
-        });
+        <!-- Add more app cards as needed -->
+    </div>
 
-        document.getElementById('analyzeBtn').addEventListener('click', analyzeData);
+    <!-- Iframe View -->
+    <div id="iframeView" class="iframe-container">
+        <div class="iframe-header">
+            <span class="iframe-title" id="iframeTitle">App Preview</span>
+            <button class="close-iframe" onclick="closeIframe()">Close</button>
+        </div>
+        <iframe id="appFrame" src=""></iframe>
+    </div>
+
+    <!-- Setup Instructions -->
+    <div class="setup-instructions">
+        <h2>📁 File Structure Setup</h2>
+        <p>To use this landing page with multiple apps, organize your GitHub Pages repository like this:</p>
         
-        // Export button handler
-        document.getElementById('exportBtn').addEventListener('click', exportResults);
+        <div class="code-block">
+            <pre>your-github-username.github.io/
 
-        async function handleFileUpload(event, type) {
-            const file = event.target.files[0];
-            if (!file) return;
 
-            try {
-                const content = await readFile(file);
-                const data = parseFileContent(content, file.name);
-                
-                if (type === 'followers') {
-                    followersData = data;
-                    document.getElementById('followersBox').classList.add('loaded');
-                    document.getElementById('followersCount').textContent = data.length;
-                } else {
-                    followingData = data;
-                    document.getElementById('followingBox').classList.add('loaded');
-                    document.getElementById('followingCount').textContent = data.length;
-                }
+├── index.html          (this landing page)
+├── food-scanner.html   (the food scanner app)
+├── your-other-app.html (your existing app)
+└── other-apps/         (optional folder for more apps)</pre>
+</div>
 
-                // Enable analyze button if both files are loaded
-                if (followersData.length > 0 && followingData.length > 0) {
-                    document.getElementById('analyzeBtn').classList.add('active');
-                }
 
-                hideError();
-            } catch (error) {
-                showError(`Error reading ${type} file: ${error.message}`);
-            }
+        <h2>🚀 Quick Setup Steps</h2>
+        <ol style="margin-left: 20px; line-height: 1.8;">
+            <li>Save this file as <code>index.html</code> in your repository root</li>
+            <li>Save the food scanner app as <code>food-scanner.html</code></li>
+            <li>Rename your existing app file (or update the links above)</li>
+            <li>Commit and push to GitHub</li>
+            <li>Your apps will be available at:
+                <ul style="margin-top: 10px;">
+                    <li><code>https://albertalejandrocorrea.github.io/</code> (landing page)</li>
+                    <li><code>https://albertalejandrocorrea.github.io/food-scanner.html</code></li>
+                    <li><code>https://albertalejandrocorrea.github.io/instagram-follower-analyzer.html</code></li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+</main>
+
+<script>
+    // View toggle functions
+    function showGridView() {
+        document.getElementById('gridView').style.display = 'grid';
+        document.getElementById('iframeView').style.display = 'none';
+        document.querySelectorAll('.toggle-btn')[0].classList.add('active');
+        document.querySelectorAll('.toggle-btn')[1].classList.remove('active');
+    }
+
+    function showIframeView() {
+        // Don't switch if no iframe is loaded
+        if (!document.getElementById('appFrame').src) {
+            return;
         }
+        document.getElementById('gridView').style.display = 'none';
+        document.getElementById('iframeView').style.display = 'block';
+        document.querySelectorAll('.toggle-btn')[0].classList.remove('active');
+        document.querySelectorAll('.toggle-btn')[1].classList.add('active');
+    }
 
-        function readFile(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = e => resolve(e.target.result);
-                reader.onerror = reject;
-                reader.readAsText(file);
+    // Load app in iframe
+    function loadInIframe(title, url) {
+        document.getElementById('iframeTitle').textContent = title;
+        document.getElementById('appFrame').src = url;
+        showIframeView();
+    }
+
+    // Close iframe
+    function closeIframe() {
+        document.getElementById('appFrame').src = '';
+        showGridView();
+    }
+
+    // Add smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
             });
-        }
+        });
+    });
+</script>
 
-        function parseFileContent(content, filename) {
-            try {
-                // Try parsing as JSON first
-                if (filename.endsWith('.json')) {
-                    const jsonData = JSON.parse(content);
-                    
-                    // Handle different JSON structures
-                    if (Array.isArray(jsonData)) {
-                        return extractUsernames(jsonData);
-                    } else if (jsonData.relationships_following) {
-                        return extractUsernames(jsonData.relationships_following);
-                    } else if (jsonData.relationships_followers) {
-                        return extractUsernames(jsonData.relationships_followers);
-                    } else if (jsonData.followers || jsonData.following) {
-                        // Handle alternative JSON structure
-                        return extractUsernames(jsonData.followers || jsonData.following);
-                    } else {
-                        // Try to find any array in the JSON
-                        const arrays = findArraysInObject(jsonData);
-                        if (arrays.length > 0) {
-                            return extractUsernames(arrays[0]);
-                        }
-                        throw new Error('Unrecognized JSON structure');
-                    }
-                }
-                
-                // Parse as CSV
-                else if (filename.endsWith('.csv')) {
-                    return parseCSV(content);
-                }
-                
-                // Try to parse as text file with usernames
-                else if (filename.endsWith('.txt')) {
-                    return content.split('\n').filter(line => line.trim()).map(line => line.trim());
-                }
-                
-                throw new Error('Unsupported file format. Please use .json, .csv, or .txt files.');
-            } catch (error) {
-                throw new Error('Failed to parse file: ' + error.message);
-            }
-        }
 
-        function findArraysInObject(obj) {
-            const arrays = [];
-            for (const key in obj) {
-                if (Array.isArray(obj[key])) {
-                    arrays.push(obj[key]);
-                } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-                    arrays.push(...findArraysInObject(obj[key]));
-                }
-            }
-            return arrays;
-        }
-
-        function extractUsernames(data) {
-            const usernames = [];
-            
-            // If it's a simple array of strings, return it
-            if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'string') {
-                return data;
-            }
-            
-            // Recursive function to extract usernames from nested structures
-            function extract(item) {
-                if (typeof item === 'string') {
-                    usernames.push(item);
-                } else if (Array.isArray(item)) {
-                    item.forEach(extract);
-                } else if (item && typeof item === 'object') {
-                    // Check for Instagram's string_list_data format
-                    if (item.string_list_data && Array.isArray(item.string_list_data)) {
-                        item.string_list_data.forEach(user => {
-                            if (user.value) usernames.push(user.value);
-                            if (user.href && user.href.includes('instagram.com/')) {
-                                const username = user.href.split('instagram.com/')[1].replace('/', '');
-                                if (username) usernames.push(username);
-                            }
-                        });
-                    }
-                    // Check for direct username field
-                    else if (item.username) {
-                        usernames.push(item.username);
-                    }
-                    // Check for value field
-                    else if (item.value) {
-                        usernames.push(item.value);
-                    }
-                    // Check for title field (some exports use this)
-                    else if (item.title) {
-                        usernames.push(item.title);
-                    }
-                    // Check for name field
-                    else if (item.name) {
-                        usernames.push(item.name);
-                    }
-                    // Recursively check all properties
-                    else {
-                        Object.values(item).forEach(val => {
-                            if (val && typeof val === 'object') {
-                                extract(val);
-                            }
-                        });
-                    }
-                }
-            }
-            
-            extract(data);
-            
-            // Remove duplicates and empty values
-            return [...new Set(usernames.filter(u => u && u.trim()))];
-        }
-
-        function parseCSV(content) {
-            const lines = content.split('\n').filter(line => line.trim());
-            const usernames = [];
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (line) {
-                    // Skip header if it exists
-                    if (i === 0 && (line.toLowerCase().includes('username') || line.toLowerCase().includes('user'))) {
-                        continue;
-                    }
-                    // Extract username (handle quoted values)
-                    const username = line.replace(/^["']|["']$/g, '').split(',')[0].trim();
-                    if (username) {
-                        usernames.push(username);
-                    }
-                }
-            }
-            
-            return usernames;
-        }
-
-        function analyzeData() {
-            if (followersData.length === 0 || followingData.length === 0) {
-                showError('Please upload both files before analyzing');
-                return;
-            }
-
-            // Create a Set of followers for faster lookup
-            const followersSet = new Set(followersData.map(u => u.toLowerCase()));
-            
-            // Find people you follow who don't follow you back
-            nonFollowers = followingData.filter(username => 
-                !followersSet.has(username.toLowerCase())
-            );
-
-            // Calculate mutual followers
-            const mutualCount = followingData.filter(username => 
-                followersSet.has(username.toLowerCase())
-            ).length;
-
-            // Update statistics
-            document.getElementById('totalFollowers').textContent = followersData.length;
-            document.getElementById('totalFollowing').textContent = followingData.length;
-            document.getElementById('notFollowingBack').textContent = nonFollowers.length;
-            document.getElementById('mutualFollowers').textContent = mutualCount;
-            document.getElementById('unfollowCount').textContent = nonFollowers.length;
-
-            // Display non-followers list
-            const listContainer = document.getElementById('unfollowersList');
-            listContainer.innerHTML = '';
-            
-            nonFollowers.forEach(username => {
-                const userItem = document.createElement('div');
-                userItem.className = 'user-item';
-                userItem.innerHTML = `
-                    <div class="user-avatar">${username.charAt(0).toUpperCase()}</div>
-                    <div>${username}</div>
-                `;
-                listContainer.appendChild(userItem);
-            });
-
-            // Show results
-            document.getElementById('results').style.display = 'block';
-            
-            // Smooth scroll to results
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function exportResults() {
-            if (nonFollowers.length === 0) {
-                showError('No data to export');
-                return;
-            }
-
-            try {
-                const csv = 'Username\n' + nonFollowers.join('\n');
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                
-                // Check if browser supports msSaveBlob (for IE)
-                if (navigator.msSaveBlob) {
-                    navigator.msSaveBlob(blob, 'instagram_non_followers.csv');
-                    return;
-                }
-                
-                // Create object URL
-                const url = window.URL.createObjectURL(blob);
-                
-                // Create temporary link element
-                const link = document.createElement('a');
-                link.setAttribute('href', url);
-                link.setAttribute('download', 'instagram_non_followers.csv');
-                link.style.visibility = 'hidden';
-                
-                // Append to body, click, and remove
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                // Clean up the URL object
-                setTimeout(() => {
-                    window.URL.revokeObjectURL(url);
-                }, 100);
-                
-            } catch (error) {
-                console.error('Export error:', error);
-                
-                // Fallback method - open in new window
-                try {
-                    const csv = 'Username\n' + nonFollowers.join('\n');
-                    const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-                    const newWindow = window.open(dataUri);
-                    
-                    if (!newWindow) {
-                        // If popup blocked, create a visible download link
-                        showError('Please disable popup blocker or use the download link below');
-                        createDownloadLink(csv);
-                    }
-                } catch (fallbackError) {
-                    console.error('Fallback error:', fallbackError);
-                    showError('Export failed. Creating download link...');
-                    createDownloadLink(nonFollowers.join('\n'));
-                }
-            }
-        }
-        
-        function createDownloadLink(csvContent) {
-            const resultsDiv = document.getElementById('results');
-            
-            // Remove existing download link if any
-            const existingLink = document.getElementById('downloadLink');
-            if (existingLink) {
-                existingLink.remove();
-            }
-            
-            // Create a visible download link
-            const linkContainer = document.createElement('div');
-            linkContainer.id = 'downloadLink';
-            linkContainer.style.cssText = 'margin-top: 20px; padding: 20px; background: #e8f5e9; border-radius: 10px; text-align: center;';
-            
-            const link = document.createElement('a');
-            link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('Username\n' + csvContent);
-            link.download = 'instagram_non_followers.csv';
-            link.textContent = 'Click here to download CSV';
-            link.style.cssText = 'color: #2e7d32; font-weight: bold; text-decoration: underline;';
-            
-            linkContainer.appendChild(link);
-            resultsDiv.appendChild(linkContainer);
-        }
-
-        function showError(message) {
-            const errorElement = document.getElementById('errorMsg');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-        }
-
-        function hideError() {
-            document.getElementById('errorMsg').style.display = 'none';
-        }
-    </script>
 </body>
 </html>
