@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Barcode Scanner with Nutrition - Calculated Decisions</title>
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.2/dist/quagga.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -316,6 +317,22 @@
             margin-top: 2px;
         }
 
+        .edit-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn:hover {
+            background: #1976D2;
+            transform: scale(1.05);
+        }
+
         .delete-btn {
             background: #ff4444;
             color: white;
@@ -401,16 +418,66 @@
             justify-content: center;
         }
 
-        .modal-content {
-            background: #2f4f49;
-            padding: 30px;
+        .ocr-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
             border-radius: 16px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .ocr-button {
+            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .ocr-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            margin: 15px auto;
+            display: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .ocr-status {
+            text-align: center;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .ocr-results {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            max-height: 200px;
             overflow-y: auto;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
         }
 
         .modal-header {
@@ -449,6 +516,17 @@
         <div class="controls">
             <button id="startBtn" class="primary-btn">Start Scanner</button>
             <button id="stopBtn" class="secondary-btn" style="display: none;">Stop Scanner</button>
+        </div>
+
+        <div class="ocr-section">
+            <h3 style="margin-bottom: 15px;">📸 Scan Nutrition Label</h3>
+            <input type="file" id="imageInput" accept="image/*" capture="environment" onchange="processImage(event)">
+            <button class="ocr-button" onclick="document.getElementById('imageInput').click()">
+                Take Photo / Upload Nutrition Label
+            </button>
+            <img id="imagePreview" class="image-preview" alt="Nutrition label preview">
+            <div id="ocrStatus" class="ocr-status"></div>
+            <div id="ocrResults" class="ocr-results"></div>
         </div>
 
         <div class="manual-entry">
@@ -579,7 +657,7 @@
                             fat: Math.round((nutrition.fat_serving || 0) * 10) / 10,
                             fiber: Math.round((nutrition.fiber_serving || 0) * 10) / 10,
                             sugar: Math.round((nutrition.sugars_serving || 0) * 10) / 10,
-                            sodium: Math.round((nutrition.salt_serving || 0) * 1000) || 0 // Salt is actually sodium in mg
+                            sodium: Math.round((nutrition.salt_serving || 0) * 393) || 0 // Convert salt to sodium (salt * 0.393 * 1000)
                         };
                     } else if (nutrition['energy-kcal_100g']) {
                         // Fall back to 100g data
@@ -590,7 +668,7 @@
                             fat: Math.round((nutrition.fat_100g || 0) * 10) / 10,
                             fiber: Math.round((nutrition.fiber_100g || 0) * 10) / 10,
                             sugar: Math.round((nutrition.sugars_100g || 0) * 10) / 10,
-                            sodium: Math.round((nutrition.salt_100g || 0) * 1000) || 0 // Salt is actually sodium in mg
+                            sodium: Math.round((nutrition.salt_100g || 0) * 393) || 0 // Convert salt to sodium
                         };
                         nutritionPer = 'per 100g';
                         if (!servingSize) servingSize = '100g';
@@ -711,6 +789,10 @@
                 <h3 style="text-align: center; margin-bottom: 5px;">${product.name}</h3>
                 <p style="text-align: center; color: #ccc; margin-bottom: 15px;">${product.brand}</p>
                 ${nutritionHtml}
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <p style="color: #aaa; font-size: 14px; margin-bottom: 10px;">Review and edit before adding:</p>
+                    <button onclick="editBeforeAdd()" class="edit-btn" style="width: 100%; margin-bottom: 10px;">Edit Nutrition Info</button>
+                </div>
             `;
             
             modal.style.display = 'flex';
@@ -931,6 +1013,123 @@
             updateDisplay();
             
             // Clear form
+            clearForm();
+            
+            showStatus('Item added successfully');
+        }
+
+        // Edit item function
+        function editItem(id) {
+            const item = foodInventory.find(i => i.id === id);
+            if (!item) return;
+            
+            // Populate form with existing data
+            document.getElementById('foodName').value = item.name;
+            document.getElementById('barcode').value = item.barcode !== 'N/A' ? item.barcode : '';
+            document.getElementById('brand').value = item.brand;
+            document.getElementById('quantity').value = item.quantity;
+            document.getElementById('servingSize').value = item.servingSize || '';
+            document.getElementById('servingsPerContainer').value = item.servingsPerContainer || '';
+            
+            if (item.nutrition) {
+                document.getElementById('calories').value = item.nutrition.calories || '';
+                document.getElementById('protein').value = item.nutrition.protein || '';
+                document.getElementById('carbs').value = item.nutrition.carbs || '';
+                document.getElementById('fat').value = item.nutrition.fat || '';
+                document.getElementById('fiber').value = item.nutrition.fiber || '';
+                document.getElementById('sugar').value = item.nutrition.sugar || '';
+                document.getElementById('sodium').value = item.nutrition.sodium || '';
+                document.getElementById('saturatedFat').value = item.nutrition.saturatedFat || '';
+            }
+            
+            // Change button to update mode
+            const addButton = document.querySelector('.manual-entry button[onclick="addManualItem()"]');
+            addButton.textContent = 'Update Item';
+            addButton.setAttribute('onclick', `updateItem(${id})`);
+            
+            // Scroll to form
+            document.querySelector('.manual-entry').scrollIntoView({ behavior: 'smooth' });
+            
+            showStatus('Editing item - make changes and click Update', 'success');
+        }
+
+        // Update item function
+        function updateItem(id) {
+            const name = document.getElementById('foodName').value.trim();
+            if (!name) {
+                showStatus('Please enter a food name', 'error');
+                return;
+            }
+            
+            const itemIndex = foodInventory.findIndex(i => i.id === id);
+            if (itemIndex === -1) return;
+            
+            // Update the item
+            foodInventory[itemIndex] = {
+                ...foodInventory[itemIndex],
+                name: name,
+                barcode: document.getElementById('barcode').value.trim() || 'N/A',
+                brand: document.getElementById('brand').value.trim() || 'Generic',
+                quantity: parseInt(document.getElementById('quantity').value),
+                servingSize: document.getElementById('servingSize').value.trim() || '1 serving',
+                servingsPerContainer: document.getElementById('servingsPerContainer').value.trim() || '',
+                nutrition: {
+                    calories: parseFloat(document.getElementById('calories').value) || 0,
+                    protein: parseFloat(document.getElementById('protein').value) || 0,
+                    carbs: parseFloat(document.getElementById('carbs').value) || 0,
+                    fat: parseFloat(document.getElementById('fat').value) || 0,
+                    fiber: parseFloat(document.getElementById('fiber').value) || 0,
+                    sugar: parseFloat(document.getElementById('sugar').value) || 0,
+                    sodium: parseFloat(document.getElementById('sodium').value) || 0,
+                    saturatedFat: parseFloat(document.getElementById('saturatedFat').value) || 0
+                }
+            };
+            
+            saveInventory();
+            updateDisplay();
+            
+            // Reset form and button
+            clearForm();
+            const addButton = document.querySelector('.manual-entry button[onclick^="updateItem"]');
+            addButton.textContent = 'Add Item';
+            addButton.setAttribute('onclick', 'addManualItem()');
+            
+            showStatus('Item updated successfully');
+        }
+
+        // Edit before adding (from modal)
+        function editBeforeAdd() {
+            if (!pendingProduct) return;
+            
+            // Close modal
+            closeModal();
+            
+            // Populate form with pending product data
+            document.getElementById('foodName').value = pendingProduct.name;
+            document.getElementById('barcode').value = pendingProduct.barcode;
+            document.getElementById('brand').value = pendingProduct.brand;
+            document.getElementById('servingSize').value = pendingProduct.servingSize || '';
+            document.getElementById('servingsPerContainer').value = pendingProduct.servingsPerContainer || '';
+            
+            if (pendingProduct.nutrition) {
+                document.getElementById('calories').value = pendingProduct.nutrition.calories || '';
+                document.getElementById('protein').value = pendingProduct.nutrition.protein || '';
+                document.getElementById('carbs').value = pendingProduct.nutrition.carbs || '';
+                document.getElementById('fat').value = pendingProduct.nutrition.fat || '';
+                document.getElementById('fiber').value = pendingProduct.nutrition.fiber || '';
+                document.getElementById('sugar').value = pendingProduct.nutrition.sugar || '';
+                document.getElementById('sodium').value = pendingProduct.nutrition.sodium || '';
+            }
+            
+            // Scroll to form
+            document.querySelector('.manual-entry').scrollIntoView({ behavior: 'smooth' });
+            
+            showStatus('Review and edit the information before adding', 'success');
+            pendingProduct = null;
+        }
+
+        // Clear form helper
+        function clearForm() {
             document.getElementById('foodName').value = '';
             document.getElementById('barcode').value = '';
             document.getElementById('brand').value = '';
@@ -945,16 +1144,6 @@
             document.getElementById('sugar').value = '';
             document.getElementById('sodium').value = '';
             document.getElementById('saturatedFat').value = '';
-            
-            showStatus('Item added successfully');
-        }
-
-        // Delete item
-        function deleteItem(id) {
-            foodInventory = foodInventory.filter(item => item.id !== id);
-            saveInventory();
-            updateDisplay();
-            showStatus('Item removed');
         }
 
         // Update display
@@ -1008,7 +1197,10 @@
                                 </div>
                                 ${servingInfo}
                             </div>
-                            <button class="delete-btn" onclick="deleteItem(${item.id})">Delete</button>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="edit-btn" onclick="editItem(${item.id})">Edit</button>
+                                <button class="delete-btn" onclick="deleteItem(${item.id})">Delete</button>
+                            </div>
                         </div>
                         ${nutritionHtml}
                     </div>
@@ -1064,11 +1256,197 @@
             loadInventory();
         });
 
-        // Close modal on outside click
-        window.onclick = function(event) {
-            const modal = document.getElementById('productModal');
-            if (event.target === modal) {
-                closeModal();
+        // OCR functionality
+        let worker = null;
+        
+        async function initializeOCR() {
+            if (!worker) {
+                worker = await Tesseract.createWorker({
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const percent = Math.round(m.progress * 100);
+                            updateOCRStatus(`Processing... ${percent}%`);
+                        }
+                    }
+                });
+                await worker.loadLanguage('eng');
+                await worker.initialize('eng');
             }
         }
+
+        function updateOCRStatus(message) {
+            const status = document.getElementById('ocrStatus');
+            status.style.display = 'block';
+            status.textContent = message;
+        }
+
+        async function processImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Show preview
+            const preview = document.getElementById('imagePreview');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+
+            // Process with OCR
+            updateOCRStatus('Initializing OCR...');
+            
+            try {
+                await initializeOCR();
+                updateOCRStatus('Scanning nutrition label...');
+                
+                const { data: { text } } = await worker.recognize(file);
+                
+                // Show raw results (for debugging)
+                const resultsDiv = document.getElementById('ocrResults');
+                resultsDiv.textContent = text;
+                resultsDiv.style.display = 'block';
+                
+                // Parse nutrition information
+                parseNutritionLabel(text);
+                
+                updateOCRStatus('✓ Nutrition information extracted!');
+                
+            } catch (error) {
+                console.error('OCR Error:', error);
+                updateOCRStatus('Error processing image. Please try again.');
+            }
+        }
+
+        function parseNutritionLabel(text) {
+            // Normalize text: remove extra spaces, make lowercase for matching
+            const normalizedText = text.replace(/\s+/g, ' ').toLowerCase();
+            
+            // Helper function to extract values
+            function extractValue(patterns, text) {
+                for (const pattern of patterns) {
+                    const match = text.match(pattern);
+                    if (match) {
+                        // Try to extract the numeric value
+                        const value = match[1] || match[2] || match[0];
+                        const numeric = parseFloat(value.replace(/[^\d.]/g, ''));
+                        if (!isNaN(numeric)) {
+                            return numeric;
+                        }
+                    }
+                }
+                return null;
+            }
+
+            // Patterns for different nutrition label formats
+            const patterns = {
+                servingSize: [
+                    /serving size[:\s]+([^\n]+)/i,
+                    /servings?[:\s]+([^\n]+)/i,
+                    /portion[:\s]+([^\n]+)/i
+                ],
+                calories: [
+                    /calories[\s:]+(\d+)/i,
+                    /(\d+)[\s]*calories/i,
+                    /energy[\s:]+(\d+)[\s]*kcal/i,
+                    /(\d+)[\s]*cal\b/i
+                ],
+                protein: [
+                    /protein[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /protein[\s:]+(\d+\.?\d*)/i,
+                    /(\d+\.?\d*)[\s]*g[\s]*protein/i
+                ],
+                carbs: [
+                    /total[\s]*carbohydrate[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /carbohydrate[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /carbs?[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /(\d+\.?\d*)[\s]*g[\s]*carbs?/i
+                ],
+                fat: [
+                    /total[\s]*fat[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /fat[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /(\d+\.?\d*)[\s]*g[\s]*fat/i
+                ],
+                saturatedFat: [
+                    /saturated[\s]*fat[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /saturated[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /(\d+\.?\d*)[\s]*g[\s]*saturated/i
+                ],
+                fiber: [
+                    /dietary[\s]*fiber[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /fiber[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /fibre[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /(\d+\.?\d*)[\s]*g[\s]*fib(?:er|re)/i
+                ],
+                sugar: [
+                    /sugars?[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /total[\s]*sugars?[\s:]+(\d+\.?\d*)[\s]*g/i,
+                    /(\d+\.?\d*)[\s]*g[\s]*sugars?/i
+                ],
+                sodium: [
+                    /sodium[\s:]+(\d+\.?\d*)[\s]*mg/i,
+                    /sodium[\s:]+(\d+\.?\d*)/i,
+                    /(\d+\.?\d*)[\s]*mg[\s]*sodium/i
+                ]
+            };
+
+            // Extract serving size (text)
+            const servingSizeMatch = normalizedText.match(/serving size[:\s]+([^\n]+)/i);
+            if (servingSizeMatch) {
+                const servingSize = servingSizeMatch[1].trim();
+                // Clean up common OCR errors
+                const cleaned = servingSize
+                    .replace(/\([^)]*\)/g, '') // Remove parentheses
+                    .replace(/[^\w\s.\/]/g, '') // Keep only words, spaces, dots, slashes
+                    .trim();
+                if (cleaned) {
+                    document.getElementById('servingSize').value = cleaned;
+                }
+            }
+
+            // Extract numeric values
+            const calories = extractValue(patterns.calories, normalizedText);
+            if (calories !== null) document.getElementById('calories').value = calories;
+
+            const protein = extractValue(patterns.protein, normalizedText);
+            if (protein !== null) document.getElementById('protein').value = protein;
+
+            const carbs = extractValue(patterns.carbs, normalizedText);
+            if (carbs !== null) document.getElementById('carbs').value = carbs;
+
+            const fat = extractValue(patterns.fat, normalizedText);
+            if (fat !== null) document.getElementById('fat').value = fat;
+
+            const saturatedFat = extractValue(patterns.saturatedFat, normalizedText);
+            if (saturatedFat !== null) document.getElementById('saturatedFat').value = saturatedFat;
+
+            const fiber = extractValue(patterns.fiber, normalizedText);
+            if (fiber !== null) document.getElementById('fiber').value = fiber;
+
+            const sugar = extractValue(patterns.sugar, normalizedText);
+            if (sugar !== null) document.getElementById('sugar').value = sugar;
+
+            const sodium = extractValue(patterns.sodium, normalizedText);
+            if (sodium !== null) document.getElementById('sodium').value = sodium;
+
+            // Count how many fields were successfully extracted
+            const extractedCount = [calories, protein, carbs, fat, fiber, sugar, sodium]
+                .filter(v => v !== null).length;
+
+            if (extractedCount > 0) {
+                showStatus(`Extracted ${extractedCount} nutrition values! Review and adjust as needed.`, 'success');
+                
+                // Scroll to manual entry form
+                document.querySelector('.manual-entry').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                showStatus('Could not extract nutrition values. Please enter manually.', 'error');
+            }
+        }
+
+        // Cleanup OCR worker when page unloads
+        window.addEventListener('beforeunload', async () => {
+            if (worker) {
+                await worker.terminate();
+            }
+        });
     </script>
