@@ -83,6 +83,20 @@
             height: 100%;
         }
 
+        #scanner video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+        }
+
+        #scanner canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
         .scanner-overlay {
             position: absolute;
             top: 50%;
@@ -94,6 +108,7 @@
             border-radius: 8px;
             pointer-events: none;
             animation: pulse 2s infinite;
+            z-index: 1;
         }
 
         @keyframes pulse {
@@ -181,11 +196,48 @@
             box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
         }
 
+        .barcode-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .barcode-input-group input {
+            flex: 1;
+        }
+
+        .fetch-button {
+            padding: 12px 20px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .fetch-button:hover {
+            background: #1976D2;
+            transform: translateY(-1px);
+        }
+
         .nutrition-inputs {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-top: 10px;
+        }
+
+        .serving-size-group {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .serving-size-group input {
+            flex: 1;
         }
 
         .food-list {
@@ -229,6 +281,12 @@
         .food-details {
             font-size: 12px;
             color: #ccc;
+        }
+
+        .serving-info {
+            font-size: 14px;
+            color: #4CAF50;
+            margin-top: 5px;
         }
 
         .nutrition-grid {
@@ -330,22 +388,6 @@
             color: white;
         }
 
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #4CAF50;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .modal {
             display: none;
             position: fixed;
@@ -365,6 +407,8 @@
             border-radius: 16px;
             max-width: 500px;
             width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -385,17 +429,6 @@
             border-radius: 8px;
             background: rgba(0, 0, 0, 0.3);
         }
-
-        #scanner canvas {
-            width: 100% !important;
-            height: 100% !important;
-        }
-        
-        #scanner canvas.drawingBuffer {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
     </style>
 </head>
 <body>
@@ -409,7 +442,7 @@
 
     <main>
         <div id="scanner-container">
-            <div id="scanner" class="strich-scanner-container"></div>
+            <div id="scanner"></div>
             <div class="scanner-overlay"></div>
         </div>
 
@@ -426,7 +459,10 @@
             </div>
             <div class="form-group">
                 <label for="barcode">Barcode (optional)</label>
-                <input type="text" id="barcode" placeholder="e.g., 123456789">
+                <div class="barcode-input-group">
+                    <input type="text" id="barcode" placeholder="e.g., 123456789">
+                    <button type="button" id="fetchBtn" class="fetch-button" onclick="fetchByBarcode()">Fetch Info</button>
+                </div>
             </div>
             <div class="form-group">
                 <label for="brand">Brand (optional)</label>
@@ -437,7 +473,11 @@
                 <input type="number" id="quantity" value="1" min="1">
             </div>
             <div class="form-group">
-                <label>Nutrition per 100g (optional)</label>
+                <label>Nutrition per serving (optional)</label>
+                <div class="serving-size-group">
+                    <input type="text" id="servingSize" placeholder="Serving size (e.g., 1 cup, 100g)">
+                    <input type="number" id="servingsPerContainer" placeholder="Servings per container" step="0.1">
+                </div>
                 <div class="nutrition-inputs">
                     <input type="number" id="calories" placeholder="Calories" step="0.1">
                     <input type="number" id="protein" placeholder="Protein (g)" step="0.1">
@@ -445,6 +485,8 @@
                     <input type="number" id="fat" placeholder="Fat (g)" step="0.1">
                     <input type="number" id="fiber" placeholder="Fiber (g)" step="0.1">
                     <input type="number" id="sugar" placeholder="Sugar (g)" step="0.1">
+                    <input type="number" id="sodium" placeholder="Sodium (mg)" step="0.1">
+                    <input type="number" id="saturatedFat" placeholder="Saturated Fat (g)" step="0.1">
                 </div>
             </div>
             <button onclick="addManualItem()" class="primary-btn">Add Item</button>
@@ -504,7 +546,7 @@
         }
 
         // Fetch product info from Open Food Facts API
-        async function fetchProductInfo(barcode) {
+        async function fetchProductInfo(barcode, useServingSize = true) {
             try {
                 showStatus('Fetching product information...', 'success');
                 const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
@@ -514,24 +556,57 @@
                     const product = data.product;
                     const nutrition = product.nutriments || {};
                     
-                    return {
-                        name: product.product_name || `Product ${barcode}`,
-                        brand: product.brands || 'Unknown Brand',
-                        barcode: barcode,
-                        image: product.image_url || '',
-                        nutrition: {
+                    // Try to get serving size nutrition first
+                    let nutritionData = {
+                        calories: 0,
+                        protein: 0,
+                        carbs: 0,
+                        fat: 0,
+                        fiber: 0,
+                        sugar: 0,
+                        sodium: 0
+                    };
+                    
+                    let servingSize = product.serving_size || '';
+                    let nutritionPer = 'per serving';
+                    
+                    if (useServingSize && nutrition['energy-kcal_serving']) {
+                        // Use serving size data
+                        nutritionData = {
+                            calories: Math.round(nutrition['energy-kcal_serving'] || 0),
+                            protein: Math.round((nutrition.proteins_serving || 0) * 10) / 10,
+                            carbs: Math.round((nutrition.carbohydrates_serving || 0) * 10) / 10,
+                            fat: Math.round((nutrition.fat_serving || 0) * 10) / 10,
+                            fiber: Math.round((nutrition.fiber_serving || 0) * 10) / 10,
+                            sugar: Math.round((nutrition.sugars_serving || 0) * 10) / 10,
+                            sodium: Math.round((nutrition.salt_serving || 0) * 1000) || 0 // Salt is actually sodium in mg
+                        };
+                    } else if (nutrition['energy-kcal_100g']) {
+                        // Fall back to 100g data
+                        nutritionData = {
                             calories: Math.round(nutrition['energy-kcal_100g'] || 0),
                             protein: Math.round((nutrition.proteins_100g || 0) * 10) / 10,
                             carbs: Math.round((nutrition.carbohydrates_100g || 0) * 10) / 10,
                             fat: Math.round((nutrition.fat_100g || 0) * 10) / 10,
                             fiber: Math.round((nutrition.fiber_100g || 0) * 10) / 10,
                             sugar: Math.round((nutrition.sugars_100g || 0) * 10) / 10,
-                            sodium: Math.round((nutrition.sodium_100g || 0) * 1000) / 10 // Convert to mg
-                        },
-                        servingSize: product.serving_size || '100g'
+                            sodium: Math.round((nutrition.salt_100g || 0) * 1000) || 0 // Salt is actually sodium in mg
+                        };
+                        nutritionPer = 'per 100g';
+                        if (!servingSize) servingSize = '100g';
+                    }
+                    
+                    return {
+                        name: product.product_name || `Product ${barcode}`,
+                        brand: product.brands || 'Unknown Brand',
+                        barcode: barcode,
+                        image: product.image_url || '',
+                        nutrition: nutritionData,
+                        servingSize: servingSize,
+                        nutritionPer: nutritionPer,
+                        servingsPerContainer: product.servings_per_container || ''
                     };
                 } else {
-                    // Product not found in database
                     return {
                         name: `Product ${barcode}`,
                         brand: 'Unknown',
@@ -551,6 +626,39 @@
             }
         }
 
+        // Fetch by barcode button
+        async function fetchByBarcode() {
+            const barcode = document.getElementById('barcode').value.trim();
+            if (!barcode) {
+                showStatus('Please enter a barcode', 'error');
+                return;
+            }
+            
+            const productInfo = await fetchProductInfo(barcode);
+            
+            if (productInfo.name !== `Product ${barcode}`) {
+                // Populate form fields
+                document.getElementById('foodName').value = productInfo.name;
+                document.getElementById('brand').value = productInfo.brand;
+                
+                if (productInfo.nutrition) {
+                    document.getElementById('servingSize').value = productInfo.servingSize || '';
+                    document.getElementById('servingsPerContainer').value = productInfo.servingsPerContainer || '';
+                    document.getElementById('calories').value = productInfo.nutrition.calories || '';
+                    document.getElementById('protein').value = productInfo.nutrition.protein || '';
+                    document.getElementById('carbs').value = productInfo.nutrition.carbs || '';
+                    document.getElementById('fat').value = productInfo.nutrition.fat || '';
+                    document.getElementById('fiber').value = productInfo.nutrition.fiber || '';
+                    document.getElementById('sugar').value = productInfo.nutrition.sugar || '';
+                    document.getElementById('sodium').value = productInfo.nutrition.sodium || '';
+                }
+                
+                showStatus(`Product found: ${productInfo.name}`, 'success');
+            } else {
+                showStatus('Product not found in database', 'error');
+            }
+        }
+
         // Show product modal
         function showProductModal(product) {
             pendingProduct = product;
@@ -566,9 +674,12 @@
             }
             
             let nutritionHtml = '';
-            if (product.nutrition && product.nutrition.calories) {
+            if (product.nutrition && product.nutrition.calories !== undefined) {
                 nutritionHtml = `
-                    <div class="nutrition-grid" style="margin-top: 15px;">
+                    <p style="text-align: center; color: #4CAF50; margin-bottom: 10px;">
+                        ${product.nutritionPer || 'per serving'} ${product.servingSize ? `(${product.servingSize})` : ''}
+                    </p>
+                    <div class="nutrition-grid">
                         <div class="nutrition-item">
                             <div class="nutrition-value">${product.nutrition.calories}</div>
                             <div class="nutrition-label">Calories</div>
@@ -585,6 +696,11 @@
                             <div class="nutrition-value">${product.nutrition.fat}g</div>
                             <div class="nutrition-label">Fat</div>
                         </div>
+                        ${product.nutrition.sodium ? `
+                        <div class="nutrition-item">
+                            <div class="nutrition-value">${product.nutrition.sodium}</div>
+                            <div class="nutrition-label">Sodium (mg)</div>
+                        </div>` : ''}
                     </div>
                 `;
             } else {
@@ -632,34 +748,32 @@
             document.getElementById('startBtn').style.display = 'none';
             document.getElementById('stopBtn').style.display = 'block';
             
-            Quagga.init({
+            // Check if mobile or desktop
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            const config = {
                 inputStream: {
-                    name: "Live",
                     type: "LiveStream",
                     target: document.querySelector('#scanner'),
                     constraints: {
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 },
-                        facingMode: "environment"
-                    },
-                    area: { // Restrict scanning area for better performance
-                        top: "10%",
-                        right: "10%",
-                        left: "10%",
-                        bottom: "10%"
+                        width: { min: 640, ideal: 1280 },
+                        height: { min: 480, ideal: 720 },
+                        facingMode: isMobile ? "environment" : "user" // Use front camera for webcams
                     }
                 },
-                frequency: 10,
+                locator: {
+                    patchSize: "large", // Larger patch for webcams
+                    halfSample: false   // Don't downsample for better accuracy
+                },
+                numOfWorkers: 4,
+                frequency: 5,  // Slower frequency for better accuracy
                 decoder: {
                     readers: [
                         "ean_reader",
-                        "ean_8_reader",
+                        "ean_8_reader", 
                         "upc_reader",
                         "upc_e_reader",
-                        "code_128_reader",
-                        "code_39_reader",
-                        "code_93_reader",
-                        "i2of5_reader"
+                        "code_128_reader" // Added for more barcode types
                     ],
                     debug: {
                         drawBoundingBox: true,
@@ -668,39 +782,26 @@
                         showPattern: false
                     }
                 },
-                locate: true,
-                locator: {
-                    halfSample: true,
-                    patchSize: "medium",
-                    debug: {
-                        showCanvas: false,
-                        showPatches: false,
-                        showFoundPatches: false,
-                        showSkeleton: false,
-                        showLabels: false,
-                        showPatchLabels: false,
-                        showRemainingPatchLabels: false,
-                        boxFromPatches: {
-                            showTransformed: false,
-                            showTransformedBox: false,
-                            showBB: false
-                        }
-                    }
-                }
-            }, function(err) {
+                locate: true
+            };
+            
+            Quagga.init(config, function(err) {
                 if (err) {
-                    console.error('Quagga2 init error:', err);
+                    console.error('Quagga init error:', err);
                     showStatus('Camera access denied or not available', 'error');
                     scanning = false;
                     document.getElementById('startBtn').style.display = 'block';
                     document.getElementById('stopBtn').style.display = 'none';
                     return;
                 }
-                console.log("Scanner initialized successfully");
+                console.log("Scanner initialized");
                 Quagga.start();
+                
+                // Add visual feedback
+                showStatus('Scanner ready - hold barcode steady', 'success');
             });
 
-            // Process detected barcodes with visual feedback
+            // Process results with visual feedback
             Quagga.onProcessed(function(result) {
                 var drawingCtx = Quagga.canvas.ctx.overlay,
                     drawingCanvas = Quagga.canvas.dom.overlay;
@@ -711,7 +812,7 @@
                         result.boxes.filter(function (box) {
                             return box !== result.box;
                         }).forEach(function (box) {
-                            Quagga.ImageDebug.drawPath(box, {x: 0, y: 1}, drawingCtx, {color: "rgba(0, 255, 0, 0.5)", lineWidth: 2});
+                            Quagga.ImageDebug.drawPath(box, {x: 0, y: 1}, drawingCtx, {color: "green", lineWidth: 2});
                         });
                     }
 
@@ -725,35 +826,41 @@
                 }
             });
 
-            // Handle detected barcodes with confidence checking
+            // Detection handling with lower threshold for webcams
             let detectionBuffer = [];
             
             Quagga.onDetected(async function(result) {
                 const code = result.codeResult.code;
                 const format = result.codeResult.format;
-                const confidence = result.codeResult.decodedCodes
-                    .filter(x => x.error !== undefined)
-                    .reduce((acc, x) => acc + (1.0 - x.error), 0) / result.codeResult.decodedCodes.length;
-                
-                console.log(`Detected ${format} code: ${code} with confidence: ${confidence}`);
-                
-                // Only accept high confidence reads
-                if (confidence < 0.7) {
-                    return;
-                }
+                console.log('Detection:', format, code);
                 
                 // Add to buffer
                 detectionBuffer.push(code);
                 
-                // Keep only last 5 detections
+                // Keep only last 5 detections for webcams (faster confirmation)
                 if (detectionBuffer.length > 5) {
                     detectionBuffer.shift();
                 }
                 
-                // Check if we have consistent reads
-                const lastThree = detectionBuffer.slice(-3);
-                if (lastThree.length === 3 && lastThree.every(c => c === code)) {
-                    console.log('Consistent barcode detected:', code);
+                // Count occurrences
+                const counts = {};
+                detectionBuffer.forEach(c => {
+                    counts[c] = (counts[c] || 0) + 1;
+                });
+                
+                // Find most common code
+                let mostCommon = null;
+                let maxCount = 0;
+                for (const [barcode, count] of Object.entries(counts)) {
+                    if (count > maxCount) {
+                        maxCount = count;
+                        mostCommon = barcode;
+                    }
+                }
+                
+                // Need at least 3 consistent reads for webcams (lower threshold)
+                if (maxCount >= 3) {
+                    console.log('Confirmed barcode:', mostCommon);
                     
                     // Stop scanning
                     Quagga.stop();
@@ -761,23 +868,20 @@
                     document.getElementById('startBtn').style.display = 'block';
                     document.getElementById('stopBtn').style.display = 'none';
                     
-                    // Reset detection buffer
+                    // Reset buffer
                     detectionBuffer = [];
                     
-                    // Show scanning animation
-                    showStatus('Scanning barcode...', 'success');
-                    
                     // Fetch product info
-                    const productInfo = await fetchProductInfo(code);
+                    const productInfo = await fetchProductInfo(mostCommon);
                     showProductModal(productInfo);
                 }
             });
         }
 
-        // Start scanner button
+        // Start scanner
         document.getElementById('startBtn').addEventListener('click', initializeScanner);
 
-        // Stop scanner button
+        // Stop scanner
         document.getElementById('stopBtn').addEventListener('click', function() {
             if (scanning) {
                 Quagga.stop();
@@ -793,6 +897,8 @@
             const barcode = document.getElementById('barcode').value.trim();
             const brand = document.getElementById('brand').value.trim();
             const quantity = parseInt(document.getElementById('quantity').value);
+            const servingSize = document.getElementById('servingSize').value.trim();
+            const servingsPerContainer = document.getElementById('servingsPerContainer').value.trim();
 
             if (!name) {
                 showStatus('Please enter a food name', 'error');
@@ -805,6 +911,8 @@
                 name: name,
                 brand: brand || 'Generic',
                 quantity: quantity,
+                servingSize: servingSize || '1 serving',
+                servingsPerContainer: servingsPerContainer || '',
                 nutrition: {
                     calories: parseFloat(document.getElementById('calories').value) || 0,
                     protein: parseFloat(document.getElementById('protein').value) || 0,
@@ -812,7 +920,8 @@
                     fat: parseFloat(document.getElementById('fat').value) || 0,
                     fiber: parseFloat(document.getElementById('fiber').value) || 0,
                     sugar: parseFloat(document.getElementById('sugar').value) || 0,
-                    sodium: 0
+                    sodium: parseFloat(document.getElementById('sodium').value) || 0,
+                    saturatedFat: parseFloat(document.getElementById('saturatedFat').value) || 0
                 },
                 dateAdded: new Date().toISOString()
             };
@@ -826,12 +935,16 @@
             document.getElementById('barcode').value = '';
             document.getElementById('brand').value = '';
             document.getElementById('quantity').value = '1';
+            document.getElementById('servingSize').value = '';
+            document.getElementById('servingsPerContainer').value = '';
             document.getElementById('calories').value = '';
             document.getElementById('protein').value = '';
             document.getElementById('carbs').value = '';
             document.getElementById('fat').value = '';
             document.getElementById('fiber').value = '';
             document.getElementById('sugar').value = '';
+            document.getElementById('sodium').value = '';
+            document.getElementById('saturatedFat').value = '';
             
             showStatus('Item added successfully');
         }
@@ -874,9 +987,16 @@
                                 <div class="nutrition-value">${item.nutrition.fat}g</div>
                                 <div class="nutrition-label">Fat</div>
                             </div>
+                            ${item.nutrition.sodium ? `
+                            <div class="nutrition-item">
+                                <div class="nutrition-value">${item.nutrition.sodium}</div>
+                                <div class="nutrition-label">Sodium (mg)</div>
+                            </div>` : ''}
                         </div>
                     `;
                 }
+                
+                const servingInfo = item.servingSize ? `<div class="serving-info">Serving: ${item.servingSize}</div>` : '';
                 
                 return `
                     <div class="food-item">
@@ -886,6 +1006,7 @@
                                 <div class="food-details">
                                     ${item.brand} • Qty: ${item.quantity} • Barcode: ${item.barcode}
                                 </div>
+                                ${servingInfo}
                             </div>
                             <button class="delete-btn" onclick="deleteItem(${item.id})">Delete</button>
                         </div>
@@ -902,12 +1023,14 @@
                 return;
             }
 
-            const headers = ['Name', 'Brand', 'Barcode', 'Quantity', 'Calories', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Fiber (g)', 'Sugar (g)', 'Sodium (mg)', 'Date Added'];
+            const headers = ['Name', 'Brand', 'Barcode', 'Quantity', 'Serving Size', 'Servings Per Container', 'Calories', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Fiber (g)', 'Sugar (g)', 'Sodium (mg)', 'Date Added'];
             const rows = foodInventory.map(item => [
                 item.name,
                 item.brand || '',
                 item.barcode,
                 item.quantity,
+                item.servingSize || '',
+                item.servingsPerContainer || '',
                 item.nutrition?.calories || '',
                 item.nutrition?.protein || '',
                 item.nutrition?.carbs || '',
@@ -948,245 +1071,4 @@
                 closeModal();
             }
         }
-    </script> Start scanner
-        document.getElementById('startBtn').addEventListener('click', async function() {
-            if (typeof StrichSDK === 'undefined') {
-                showStatus('Scanner not available. Please use manual entry.', 'error');
-                return;
-            }
-            
-            document.getElementById('startBtn').style.display = 'none';
-            document.getElementById('stopBtn').style.display = 'block';
-            
-            try {
-                const configuration = {
-                    selector: '#scanner',
-                    engine: {
-                        symbologies: ['code128', 'ean13', 'ean8', 'upca', 'upce', 'code39']
-                    },
-                    locator: {
-                        regionOfInterest: {
-                            left: 0.1,
-                            top: 0.3,
-                            right: 0.9,
-                            bottom: 0.7
-                        }
-                    },
-                    feedback: {
-                        audio: true,
-                        vibration: true
-                    }
-                };
-                
-                barcodeScanner = new StrichSDK.BarcodeReader(configuration);
-                
-                barcodeScanner.detected = async (detections) => {
-                    if (detections.length > 0) {
-                        const code = detections[0].data;
-                        console.log('Barcode detected:', code);
-                        
-                        // Stop scanner
-                        try {
-                            await barcodeScanner.stop();
-                        } catch (e) {
-                            console.error('Error stopping scanner:', e);
-                        }
-                        
-                        document.getElementById('startBtn').style.display = 'block';
-                        document.getElementById('stopBtn').style.display = 'none';
-                        
-                        // Fetch product info
-                        const productInfo = await fetchProductInfo(code);
-                        showProductModal(productInfo);
-                    }
-                };
-                
-                await barcodeScanner.initialize();
-                await barcodeScanner.start();
-                
-                console.log('Scanner started successfully');
-                
-            } catch (error) {
-                console.error('Error starting scanner:', error);
-                showStatus('Camera access denied or error occurred', 'error');
-                document.getElementById('startBtn').style.display = 'block';
-                document.getElementById('stopBtn').style.display = 'none';
-                
-                // If Strich fails, offer to try the barcode manually
-                if (error.message && error.message.includes('license')) {
-                    showStatus('Scanner demo expired. Please enter barcode manually.', 'error');
-                }
-            }
-        });
-
-        // Stop scanner
-        document.getElementById('stopBtn').addEventListener('click', async function() {
-            if (barcodeScanner) {
-                await barcodeScanner.stop();
-                document.getElementById('startBtn').style.display = 'block';
-                document.getElementById('stopBtn').style.display = 'none';
-            }
-        });
-
-        // Add manual item
-        function addManualItem() {
-            const name = document.getElementById('foodName').value.trim();
-            const barcode = document.getElementById('barcode').value.trim();
-            const brand = document.getElementById('brand').value.trim();
-            const quantity = parseInt(document.getElementById('quantity').value);
-
-            if (!name) {
-                showStatus('Please enter a food name', 'error');
-                return;
-            }
-
-            const foodItem = {
-                id: Date.now(),
-                barcode: barcode || 'N/A',
-                name: name,
-                brand: brand || 'Generic',
-                quantity: quantity,
-                nutrition: {
-                    calories: parseFloat(document.getElementById('calories').value) || 0,
-                    protein: parseFloat(document.getElementById('protein').value) || 0,
-                    carbs: parseFloat(document.getElementById('carbs').value) || 0,
-                    fat: parseFloat(document.getElementById('fat').value) || 0,
-                    fiber: parseFloat(document.getElementById('fiber').value) || 0,
-                    sugar: parseFloat(document.getElementById('sugar').value) || 0,
-                    sodium: 0
-                },
-                dateAdded: new Date().toISOString()
-            };
-
-            foodInventory.push(foodItem);
-            saveInventory();
-            updateDisplay();
-            
-            // Clear form
-            document.getElementById('foodName').value = '';
-            document.getElementById('barcode').value = '';
-            document.getElementById('brand').value = '';
-            document.getElementById('quantity').value = '1';
-            document.getElementById('calories').value = '';
-            document.getElementById('protein').value = '';
-            document.getElementById('carbs').value = '';
-            document.getElementById('fat').value = '';
-            document.getElementById('fiber').value = '';
-            document.getElementById('sugar').value = '';
-            
-            showStatus('Item added successfully');
-        }
-
-        // Delete item
-        function deleteItem(id) {
-            foodInventory = foodInventory.filter(item => item.id !== id);
-            saveInventory();
-            updateDisplay();
-            showStatus('Item removed');
-        }
-
-        // Update display
-        function updateDisplay() {
-            const container = document.getElementById('foodItems');
-            
-            if (foodInventory.length === 0) {
-                container.innerHTML = '<div class="empty-state">No items in inventory. Start scanning or add items manually!</div>';
-                return;
-            }
-
-            container.innerHTML = foodInventory.map(item => {
-                let nutritionHtml = '';
-                if (item.nutrition && item.nutrition.calories !== undefined) {
-                    nutritionHtml = `
-                        <div class="nutrition-grid">
-                            <div class="nutrition-item">
-                                <div class="nutrition-value">${item.nutrition.calories}</div>
-                                <div class="nutrition-label">Calories</div>
-                            </div>
-                            <div class="nutrition-item">
-                                <div class="nutrition-value">${item.nutrition.protein}g</div>
-                                <div class="nutrition-label">Protein</div>
-                            </div>
-                            <div class="nutrition-item">
-                                <div class="nutrition-value">${item.nutrition.carbs}g</div>
-                                <div class="nutrition-label">Carbs</div>
-                            </div>
-                            <div class="nutrition-item">
-                                <div class="nutrition-value">${item.nutrition.fat}g</div>
-                                <div class="nutrition-label">Fat</div>
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                return `
-                    <div class="food-item">
-                        <div class="food-header">
-                            <div class="food-info">
-                                <div class="food-name">${item.name}</div>
-                                <div class="food-details">
-                                    ${item.brand} • Qty: ${item.quantity} • Barcode: ${item.barcode}
-                                </div>
-                            </div>
-                            <button class="delete-btn" onclick="deleteItem(${item.id})">Delete</button>
-                        </div>
-                        ${nutritionHtml}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Export to CSV
-        function exportToCSV() {
-            if (foodInventory.length === 0) {
-                showStatus('No items to export', 'error');
-                return;
-            }
-
-            const headers = ['Name', 'Brand', 'Barcode', 'Quantity', 'Calories', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Fiber (g)', 'Sugar (g)', 'Sodium (mg)', 'Date Added'];
-            const rows = foodInventory.map(item => [
-                item.name,
-                item.brand || '',
-                item.barcode,
-                item.quantity,
-                item.nutrition?.calories || '',
-                item.nutrition?.protein || '',
-                item.nutrition?.carbs || '',
-                item.nutrition?.fat || '',
-                item.nutrition?.fiber || '',
-                item.nutrition?.sugar || '',
-                item.nutrition?.sodium || '',
-                new Date(item.dateAdded).toLocaleDateString()
-            ]);
-
-            let csvContent = headers.join(',') + '\n';
-            rows.forEach(row => {
-                csvContent += row.map(cell => `"${cell}"`).join(',') + '\n';
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `food_inventory_nutrition_${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-
-            showStatus('Inventory exported successfully');
-        }
-
-        // Initialize
-        loadInventory();
-
-        // Close modal on outside click
-        window.onclick = function(event) {
-            const modal = document.getElementById('productModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
     </script>
-</body>
-</html>
