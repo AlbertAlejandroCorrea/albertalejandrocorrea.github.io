@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Apps - Alberto Alejandro Correa</title>
+    <title>My Apps - Calculated Decisions</title>
     <style>
         * {
             margin: 0;
@@ -12,429 +11,434 @@
             box-sizing: border-box;
         }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #2f4f49;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: #0a0a0a;
-        color: #ffffff;
-        min-height: 100vh;
-        overflow-x: hidden;
-    }
+        /* Company branding header */
+        .company-branding {
+            background: rgba(47, 79, 73, 0.95);
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 3px solid #FFD700;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
 
-    /* Animated background */
-    .bg-animation {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        z-index: -1;
-        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-        overflow: hidden;
-    }
+        .company-logo {
+            max-width: 198px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
 
-    .bg-animation::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(74, 144, 226, 0.1) 0%, transparent 70%);
-        animation: rotate 30s linear infinite;
-    }
+        .company-name {
+            color: #FFD700;
+            text-decoration: none;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
 
-    @keyframes rotate {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
+        .company-name:hover {
+            color: #FFF;
+            transform: scale(1.05);
+        }
 
-    header {
-        background: rgba(26, 26, 46, 0.9);
-        backdrop-filter: blur(10px);
-        padding: 30px 0;
-        text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        position: relative;
-        z-index: 10;
-    }
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: linear-gradient(135deg, #2f4f49 0%, #1a3a34 100%);
+            overflow: hidden;
+        }
 
-    h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, #4a90e2, #7b68ee);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: glow 3s ease-in-out infinite;
-    }
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 128, 128, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
 
-    @keyframes glow {
-        0%, 100% { filter: brightness(1); }
-        50% { filter: brightness(1.2); }
-    }
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-    .subtitle {
-        color: #888;
-        font-size: 1.1rem;
-    }
+        header {
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 30px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            position: relative;
+            z-index: 10;
+        }
 
-    main {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 60px 20px;
-    }
-
-    .view-toggle {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 40px;
-        gap: 10px;
-    }
-
-    .toggle-btn {
-        padding: 12px 24px;
-        border: none;
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border-radius: 30px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: 600;
-    }
-
-    .toggle-btn.active {
-        background: linear-gradient(135deg, #4a90e2, #7b68ee);
-        transform: scale(1.05);
-    }
-
-    .toggle-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Grid View */
-    .apps-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 30px;
-        margin-bottom: 40px;
-    }
-
-    .app-card {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        padding: 30px;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .app-card::before {
-        content: '';
-        position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        background: linear-gradient(135deg, #4a90e2, #7b68ee, #ff6b6b);
-        border-radius: 20px;
-        opacity: 0;
-        z-index: -1;
-        transition: opacity 0.3s ease;
-    }
-
-    .app-card:hover::before {
-        opacity: 1;
-    }
-
-    .app-card:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.08);
-    }
-
-    .app-icon {
-        font-size: 3rem;
-        margin-bottom: 20px;
-        display: block;
-    }
-
-    .app-title {
-        font-size: 1.5rem;
-        margin-bottom: 10px;
-        color: #fff;
-    }
-
-    .app-description {
-        color: #aaa;
-        line-height: 1.6;
-        margin-bottom: 20px;
-    }
-
-    .app-features {
-        list-style: none;
-        margin-bottom: 20px;
-    }
-
-    .app-features li {
-        padding: 5px 0;
-        color: #888;
-        font-size: 0.9rem;
-    }
-
-    .app-features li::before {
-        content: '✓ ';
-        color: #4a90e2;
-        font-weight: bold;
-    }
-
-    .app-buttons {
-        display: flex;
-        gap: 10px;
-    }
-
-    .btn {
-        flex: 1;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        text-align: center;
-        display: inline-block;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #4a90e2, #7b68ee);
-        color: white;
-    }
-
-    .btn-secondary {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Iframe View */
-    .iframe-container {
-        display: none;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        overflow: hidden;
-        height: 80vh;
-        position: relative;
-    }
-
-    .iframe-header {
-        background: rgba(26, 26, 46, 0.9);
-        padding: 15px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .iframe-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-    }
-
-    .close-iframe {
-        background: rgba(255, 255, 255, 0.1);
-        border: none;
-        color: white;
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .close-iframe:hover {
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    iframe {
-        width: 100%;
-        height: calc(100% - 60px);
-        border: none;
-        background: white;
-    }
-
-    /* Instructions */
-    .setup-instructions {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        padding: 30px;
-        margin-top: 60px;
-    }
-
-    .setup-instructions h2 {
-        color: #4a90e2;
-        margin-bottom: 20px;
-    }
-
-    .setup-instructions code {
-        background: rgba(0, 0, 0, 0.5);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-family: 'Courier New', monospace;
-    }
-
-    .code-block {
-        background: rgba(0, 0, 0, 0.5);
-        padding: 20px;
-        border-radius: 10px;
-        margin: 15px 0;
-        overflow-x: auto;
-    }
-
-    .code-block pre {
-        margin: 0;
-        color: #fff;
-        font-family: 'Courier New', monospace;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
         h1 {
-            font-size: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #008080, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 3s ease-in-out infinite;
         }
-        
+
+        @keyframes glow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .subtitle {
+            color: #FFD700;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            padding: 12px 24px;
+            border: none;
+            background: rgba(255, 215, 0, 0.1);
+            color: #FFD700;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #008080, #20B2AA);
+            color: white;
+            transform: scale(1.05);
+            border-color: transparent;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+
+        /* Grid View */
         .apps-grid {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
         }
-        
+
+        .app-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #008080, #FFD700, #20B2AA);
+            border-radius: 20px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+
+        .app-card:hover::before {
+            opacity: 1;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .app-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .app-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #FFD700;
+        }
+
+        .app-description {
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .app-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .app-features li {
+            padding: 5px 0;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .app-features li::before {
+            content: '✓ ';
+            color: #008080;
+            font-weight: bold;
+        }
+
+        .app-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #008080, #20B2AA);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 215, 0, 0.1);
+            color: #FFD700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Iframe View */
         .iframe-container {
-            height: 70vh;
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            height: 80vh;
+            position: relative;
         }
-    }
-</style>
 
+        .iframe-header {
+            background: rgba(26, 26, 46, 0.9);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
 
+        .iframe-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #FFD700;
+        }
+
+        .close-iframe {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #FFD700;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-iframe:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+
+        iframe {
+            width: 100%;
+            height: calc(100% - 60px);
+            border: none;
+            background: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .company-name {
+                font-size: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .iframe-container {
+                height: 70vh;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="bg-animation"></div>
 
-
-<header>
-    <h1>My Web Applications</h1>
-    <p class="subtitle">A collection of useful tools and applications</p>
-</header>
-
-<main>
-    <div class="view-toggle">
-        <button class="toggle-btn active" onclick="showGridView()">Grid View</button>
-        <button class="toggle-btn" onclick="showIframeView()">Embedded View</button>
+    <!-- Company Branding Header -->
+    <div class="company-branding">
+        <img src="https://img1.wsimg.com/isteam/ip/17da66aa-05e0-4e17-aec0-570151a3c322/blob-f3b648f.png/:/rs=w:198,h:112,cg:true,m/cr=w:198,h:112/qt=q:95" 
+             alt="Calculated Decisions Logo" 
+             class="company-logo">
+        <br>
+        <a href="https://calculated-decisions.com/" class="company-name">Calculated Decisions</a>
     </div>
 
-    <!-- Grid View -->
-    <div id="gridView" class="apps-grid">
-        <!-- App 1: Food Scanner -->
-        <div class="app-card">
-            <span class="app-icon">🍎</span>
-            <h3 class="app-title">Food Scanner & Nutrition Tracker</h3>
-            <p class="app-description">
-                Scan barcodes to catalog your food inventory and track nutritional information for your health goals.
-            </p>
-            <ul class="app-features">
-                <li>Barcode scanning with camera</li>
-                <li>Automatic nutrition lookup</li>
-                <li>Export to CSV format</li>
-                <li>Track calories & macros</li>
-            </ul>
-            <div class="app-buttons">
-                <a href="food-scanner.html" class="btn btn-primary">Open App</a>
-                <button class="btn btn-secondary" onclick="loadInIframe('Food Scanner', 'food-scanner.html')">Preview</button>
+    <header>
+        <h1>My Web Applications</h1>
+        <p class="subtitle">A collection of useful tools and applications</p>
+    </header>
+
+    <main>
+        <div class="view-toggle">
+            <button class="toggle-btn active" onclick="showGridView()">Grid View</button>
+            <button class="toggle-btn" onclick="showIframeView()">Embedded View</button>
+        </div>
+
+        <!-- Grid View -->
+        <div id="gridView" class="apps-grid">
+            <!-- App 1: Food Scanner -->
+            <div class="app-card">
+                <span class="app-icon">🍎</span>
+                <h3 class="app-title">Food Scanner & Nutrition Tracker</h3>
+                <p class="app-description">
+                    Scan barcodes to catalog your food inventory and track nutritional information for your health goals.
+                </p>
+                <ul class="app-features">
+                    <li>Barcode scanning with camera</li>
+                    <li>Automatic nutrition lookup</li>
+                    <li>Export to CSV format</li>
+                    <li>Track calories & macros</li>
+                </ul>
+                <div class="app-buttons">
+                    <a href="food-scanner.html" class="btn btn-primary">Open App</a>
+                    <button class="btn btn-secondary" onclick="loadInIframe('Food Scanner', 'food-scanner.html')">Preview</button>
+                </div>
+            </div>
+
+            <!-- App 2: Instagram Follower Analyzer -->
+            <div class="app-card">
+                <span class="app-icon">🚀</span>
+                <h3 class="app-title">Instagram Follower Analyzer</h3>
+                <p class="app-description">
+                    Takes your follower list and checks it against your following list to find out who doesn't follow you back
+                </p>
+                <ul class="app-features">
+                    <li>Works on Mobile or Web</li>
+                    <li>Works with JSON, HTML, and TXT files</li>
+                    <li>Exports to CSV</li>
+                    <li>More features coming soon</li>
+                </ul>
+                <div class="app-buttons">
+                    <a href="instagram-follower-analyzer.html" class="btn btn-primary">Open App</a>
+                    <button class="btn btn-secondary" onclick="loadInIframe('Instagram Follower Analyzer', 'instagram-follower-analyzer.html')">Preview</button>
+                </div>
             </div>
         </div>
 
-        <!-- App 2: Your Other App -->
-        <div class="app-card">
-            <span class="app-icon">🚀</span>
-            <h3 class="app-title">Instagram Follower Analyzer</h3>
-            <p class="app-description">
-                Takes your follower list and checks it against your following list to find out who doesn't follow you back
-            </p>
-            <ul class="app-features">
-                <li>Works on Mobile or Web</li>
-                <li>Works with JSON, HTML, and TXT files</li>
-                <li>Exports to CSV</li>
-                <li>More features coming soon</li>
-            </ul>
-            <div class="app-buttons">
-                <a href="instagram-follower-analyzer.html" class="btn btn-primary">Open App</a>
-                <button class="btn btn-secondary" onclick="loadInIframe('Instagram Follower Analyzer', 'instagram-follower-analyzer.html')">Preview</button>
+        <!-- Iframe View -->
+        <div id="iframeView" class="iframe-container">
+            <div class="iframe-header">
+                <span class="iframe-title" id="iframeTitle">App Preview</span>
+                <button class="close-iframe" onclick="closeIframe()">Close</button>
             </div>
+            <iframe id="appFrame" src=""></iframe>
         </div>
+    </main>
 
-        <!-- Add more app cards as needed -->
-    </div>
-
-    <!-- Iframe View -->
-    <div id="iframeView" class="iframe-container">
-        <div class="iframe-header">
-            <span class="iframe-title" id="iframeTitle">App Preview</span>
-            <button class="close-iframe" onclick="closeIframe()">Close</button>
-        </div>
-        <iframe id="appFrame" src=""></iframe>
-    </div>
-
-    
-</main>
-
-<script>
-    // View toggle functions
-    function showGridView() {
-        document.getElementById('gridView').style.display = 'grid';
-        document.getElementById('iframeView').style.display = 'none';
-        document.querySelectorAll('.toggle-btn')[0].classList.add('active');
-        document.querySelectorAll('.toggle-btn')[1].classList.remove('active');
-    }
-
-    function showIframeView() {
-        // Don't switch if no iframe is loaded
-        if (!document.getElementById('appFrame').src) {
-            return;
+    <script>
+        // View toggle functions
+        function showGridView() {
+            document.getElementById('gridView').style.display = 'grid';
+            document.getElementById('iframeView').style.display = 'none';
+            document.querySelectorAll('.toggle-btn')[0].classList.add('active');
+            document.querySelectorAll('.toggle-btn')[1].classList.remove('active');
         }
-        document.getElementById('gridView').style.display = 'none';
-        document.getElementById('iframeView').style.display = 'block';
-        document.querySelectorAll('.toggle-btn')[0].classList.remove('active');
-        document.querySelectorAll('.toggle-btn')[1].classList.add('active');
-    }
 
-    // Load app in iframe
-    function loadInIframe(title, url) {
-        document.getElementById('iframeTitle').textContent = title;
-        document.getElementById('appFrame').src = url;
-        showIframeView();
-    }
+        function showIframeView() {
+            // Don't switch if no iframe is loaded
+            if (!document.getElementById('appFrame').src) {
+                return;
+            }
+            document.getElementById('gridView').style.display = 'none';
+            document.getElementById('iframeView').style.display = 'block';
+            document.querySelectorAll('.toggle-btn')[0].classList.remove('active');
+            document.querySelectorAll('.toggle-btn')[1].classList.add('active');
+        }
 
-    // Close iframe
-    function closeIframe() {
-        document.getElementById('appFrame').src = '';
-        showGridView();
-    }
+        // Load app in iframe
+        function loadInIframe(title, url) {
+            document.getElementById('iframeTitle').textContent = title;
+            document.getElementById('appFrame').src = url;
+            showIframeView();
+        }
 
-    // Add smooth scrolling
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
+        // Close iframe
+        function closeIframe() {
+            document.getElementById('appFrame').src = '';
+            showGridView();
+        }
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
             });
         });
-    });
-</script>
-
-
+    </script>
 </body>
 </html>
