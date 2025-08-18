@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Week 1 Pick Sheet 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #013369, #4CAF50);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+        }
+
+        .header h2 {
+            font-size: 2em;
+            font-weight: bold;
+            opacity: 0.9;
+        }
+
+        .player-info {
+            padding: 25px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .name-section, .tiebreaker-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-info input {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            transition: border-color 0.3s;
+            width: 200px;
+        }
+
+        .player-info input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .games-container {
+            padding: 25px;
+        }
+
+        .day-section {
+            margin-bottom: 25px;
+        }
+
+        .day-header {
+            background: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .game {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            min-height: 60px;
+        }
+
+        .game:last-child {
+            border-bottom: none;
+        }
+
+        .team-checkbox {
+            width: 25px;
+            height: 25px;
+            margin-right: 15px;
+            cursor: pointer;
+            appearance: none;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .team-checkbox:checked {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+
+        .team-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .away-team {
+            min-width: 120px;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .at {
+            margin: 0 15px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .home-team {
+            min-width: 120px;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .time {
+            margin-left: auto;
+            min-width: 80px;
+            text-align: right;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .home-checkbox {
+            width: 25px;
+            height: 25px;
+            margin-left: 15px;
+            cursor: pointer;
+            appearance: none;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .home-checkbox:checked {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+
+        .home-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .submit-section {
+            padding: 30px;
+            background: #f8f9fa;
+            text-align: center;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px 10px 0;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .reset-btn {
+            background: #f44336;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px 10px 0;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .results {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e8f5e8;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .picks-count {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .header h2 {
+                font-size: 1.5em;
+            }
+            
+            .player-info {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .game {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .time {
+                margin-left: 0;
+                order: -1;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>WEEK 1 PICK SHEET</h1>
+            <h2>2025</h2>
+        </div>
+
+        <div class="player-info">
+            <div class="name-section">
+                <label><strong>Name:</strong></label>
+                <input type="text" id="playerName" placeholder="Enter your name" maxlength="50">
+            </div>
+            <div class="tiebreaker-section">
+                <label><strong>Tiebreaker: Total Points Scored in Monday Night Football Game</strong></label>
+                <input type="number" id="tiebreaker" placeholder="Total points" min="0" max="150" style="width: 100px;">
+            </div>
+        </div>
+
+        <div class="games-container">
+            <div class="day-section">
+                <div class="day-header">Thursday, Sep. 4</div>
+                <div class="game" data-game="1">
+                    <input type="checkbox" class="team-checkbox" data-team="DAL" data-game="1">
+                    <span class="away-team">Dallas</span>
+                    <span class="at">at</span>
+                    <span class="home-team">Philadelphia</span>
+                    <input type="checkbox" class="home-checkbox" data-team="PHI" data-game="1">
+                    <span class="time">8:20 pm</span>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-header">Friday, Sep. 5</div>
+                <div class="game" data-game="2">
+                    <input type="checkbox" class="team-checkbox" data-team="KC" data-game="2">
+                    <span class="away-team">Kansas City</span>
+                    <span class="at">at</span>
+                    <span class="home-team">LA Chargers</span>
+                    <input type="checkbox" class="home-checkbox" data-team="LAC" data-game="2">
+                    <span class="time">8:00 pm</span>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-header">Sunday, Sep. 7</div>
+                <div class="game" data-game="3">
+                    <input type="checkbox" class="team-checkbox" data-team="TB" data-game="3">
+                    <span class="away-team">Tampa Bay</span>
+                    <span class="at">at</span>
+                    <span class="home-team">Atlanta</span>
+                    <input type="checkbox" class="home-checkbox" data-team="ATL" data-game="3">
+                    <span class="time">1:00 pm</span>
+                </div>
+                <div class="game" data-game="4">
+                    <input type="checkbox" class="team-checkbox" data-team="CIN" data-game="4">
+                    <span class="away-team">Cincinnati</span>
+                    <span class="at">at</span>
+                    <span class="home-team">Cleveland</span>
+                    <input type="checkbox" class="home-checkbox" data-team="CLE" data-game="4">
+                    <span class="time">1:00 pm</span>
+                </div>
+                <div class="game" data-game="5">
+                    <input type="checkbox" class="team-checkbox" data-team="MIA" data-game="5">
+                    <span class="away-team">Miami</span>
+                    <span class="at">at</span>
+                    <span class="home-team">Indianapolis</span>
+                    <input type="checkbox" class="home-checkbox" data-team="IND" data-game="5">
+                    <span class="time">1:00 pm</span>
+                </div>
+                <div class="game" data-game="6">
+                    <input type="checkbox" class="team-checkbox" data-team="CAR" data-game="6">
+                    <span class="away-team">Carolina</span>
+                    <span class="at">at</span>
+                    <span class="home-team">Jacksonville</span>
+                    <input type="checkbox" class="home-checkbox" data-team="JAX" data-game="6">
+                    <span class="time">1:00 pm</span>
+                </div>
+                <div class="game" data-game="7">
+                    <input type="checkbox" class="team-checkbox" data-team="LV" data-game="7">
+                    <span class="away-team">Las Vegas</span>
+                    <span class="at">at</span>
+                    <span class="home-team">New England</span>
+                    <input type="checkbox" class="home-checkbox" data-team="NE" data-game="7">
+                    <span class="time">1:00 pm</span>
+                </div>
+                <div class="game" data-game="8">
+                    <input type="checkbox" class="team-checkbox" data-team="ARI" data-game="8">
+                    <span class="away-team">Arizona</span>
+                    <span class="at">at</span>
+                    <span class="home-team">New Orleans</span>
+                    <input type="checkbox" class="home-checkbox" data-team="NO" data-game="8">
+                    <span class="time">1:00 pm</span>
+                </div>
+                <div class="game" data-game="9">
+                    <input type="checkbox" class="team-checkbox" data-team="PIT" data-game="9">
+                    <span class="away-team">Pittsburgh</span>
+                    <span class="at">at</span>
+                    <span class="home-team">NY Jets</span>
+                    <input type="checkbox" class="home-checkbox" data-team="NYJ" data-game="9">
+                    <span class="time">1:00 pm</span>
+                </div>
+                <div class="game" data-game="10">
+                    <input type="checkbox" class="team-checkbox" data-team="NYG" data-game="10">
+                    <span class="away-team">NY Giants</span>
+                    <span class="at">at</span>
+                    <span class="home-team">Washington</span>
+                    <input type="checkbox" class="home-checkbox" data-team="WAS" data-game="10">
+                    <span class="time">1:00 pm</span>
+                </div>
+                <div class="game" data-game="11">
+                    <input type="checkbox" class="team-checkbox" data-team="TEN" data-game="11">
+                    <span class="away-team">Tennessee</span>
+                    <span class="at">at</span>
+                    <span class="home-team">Denver</span>
+                    <input type="checkbox" class="home-checkbox" data-team="DEN" data-game="11">
+                    <span class="time">4:05 pm</span>
+                </div>
+                <div class="game" data-game="12">
+                    <input type="checkbox" class="team-checkbox" data-team="SF" data-game="12">
+                    <span class="away-team">San Francisco</span>
+                    <span class="at">at</span>
+                    <span class="home-team">Seattle</span>
+                    <input type="checkbox" class="home-checkbox" data-team="SEA" data-game="12">
+                    <span class="time">4:05 pm</span>
+                </div>
+                <div class="game" data-game="13">
+                    <input type="checkbox" class="team-checkbox" data-team="DET" data-game="13">
+                    <span class="away-team">Detroit</span>
+                    <span class="at">at</span>
+                    <span class="home-team">Green Bay</span>
+                    <input type="checkbox" class="home-checkbox" data-team="GB" data-game="13">
+                    <span class="time">4:25 pm</span>
+                </div>
+                <div class="game" data-game="14">
+                    <input type="checkbox" class="team-checkbox" data-team="HOU" data-game="14">
+                    <span class="away-team">Houston</span>
+                    <span class="at">at</span>
+                    <span class="home-team">LA Rams</span>
+                    <input type="checkbox" class="home-checkbox" data-team="LAR" data-game="14">
+                    <span class="time">4:25 pm</span>
+                </div>
+                <div class="game" data-game="15">
+                    <input type="checkbox" class="team-checkbox" data-team="BAL" data-game="15">
+                    <span class="away-team">Baltimore</span>
+                    <span class="at">at</span>
+                    <span class="home-team">Buffalo</span>
+                    <input type="checkbox" class="home-checkbox" data-team="BUF" data-game="15">
+                    <span class="time">8:20 pm</span>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-header">Monday, Sep. 8</div>
+                <div class="game" data-game="16">
+                    <input type="checkbox" class="team-checkbox" data-team="MIN" data-game="16">
+                    <span class="away-team">Minnesota</span>
+                    <span class="at">at</span>
+                    <span class="home-team">Chicago</span>
+                    <input type="checkbox" class="home-checkbox" data-team="CHI" data-game="16">
+                    <span class="time">8:15 pm</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="submit-section">
+            <div class="picks-count" id="picksCount">Games Picked: 0/16</div>
+            <br>
+            <button class="submit-btn" onclick="submitPicks()">📧 Submit My Picks</button>
+            <button class="reset-btn" onclick="resetForm()">🔄 Reset All</button>
+            
+            <div id="results" class="results">
+                <h3>✅ Your Picks Summary:</h3>
+                <div id="picksSummary"></div>
+                <p><strong>Copy this and share with your group!</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let picks = {};
+
+        // Handle checkbox selection
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('team-checkbox') || e.target.classList.contains('home-checkbox')) {
+                const gameId = e.target.dataset.game;
+                const teamCode = e.target.dataset.team;
+                const gameDiv = e.target.closest('.game');
+                
+                if (e.target.checked) {
+                    // Uncheck the other checkbox in the same game
+                    const otherCheckbox = gameDiv.querySelector(
+                        e.target.classList.contains('team-checkbox') ? '.home-checkbox' : '.team-checkbox'
+                    );
+                    otherCheckbox.checked = false;
+                    
+                    // Store the pick
+                    const teamName = e.target.classList.contains('team-checkbox') 
+                        ? gameDiv.querySelector('.away-team').textContent
+                        : gameDiv.querySelector('.home-team').textContent;
+                    
+                    picks[gameId] = {
+                        team: teamCode,
+                        teamName: teamName.trim()
+                    };
+                } else {
+                    // Remove the pick if unchecked
+                    delete picks[gameId];
+                }
+                
+                updatePicksCount();
+            }
+        });
+
+        function updatePicksCount() {
+            const count = Object.keys(picks).length;
+            document.getElementById('picksCount').textContent = `Games Picked: ${count}/16`;
+        }
+
+        function submitPicks() {
+            const playerName = document.getElementById('playerName').value.trim();
+            const tiebreaker = document.getElementById('tiebreaker').value;
+            
+            if (!playerName) {
+                alert('Please enter your name!');
+                return;
+            }
+            
+            if (Object.keys(picks).length === 0) {
+                alert('Please make at least one pick!');
+                return;
+            }
+            
+            // Generate summary
+            let summary = `WEEK 1 PICK SHEET 2025\n`;
+            summary += `Name: ${playerName}\n`;
+            if (tiebreaker) {
+                summary += `Tiebreaker: ${tiebreaker} total points\n`;
+            }
+            summary += `\n`;
+            
+            // Group picks by day
+            const days = {
+                'Thursday, Sep. 4': [1],
+                'Friday, Sep. 5': [2],
+                'Sunday, Sep. 7': [3,4,5,6,7,8,9,10,11,12,13,14,15],
+                'Monday, Sep. 8': [16]
+            };
+            
+            for (const [day, gameIds] of Object.entries(days)) {
+                const dayPicks = gameIds.filter(id => picks[id]);
+                if (dayPicks.length > 0) {
+                    summary += `${day}:\n`;
+                    dayPicks.forEach(gameId => {
+                        summary += `  ✓ ${picks[gameId].teamName}\n`;
+                    });
+                    summary += `\n`;
+                }
+            }
+            
+            summary += `Total Games Picked: ${Object.keys(picks).length}/16\n`;
+            summary += `Submitted: ${new Date().toLocaleString()}`;
+            
+            // Show results
+            document.getElementById('picksSummary').innerHTML = summary.replace(/\n/g, '<br>');
+            document.getElementById('results').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(summary);
+            alert('✅ Picks submitted! Summary has been copied to your clipboard - paste it into your group chat!');
+        }
+
+        function resetForm() {
+            if (confirm('Are you sure you want to reset all picks?')) {
+                // Clear all checkboxes
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // Clear name and tiebreaker
+                document.getElementById('playerName').value = '';
+                document.getElementById('tiebreaker').value = '';
+                
+                // Hide results
+                document.getElementById('results').style.display = 'none';
+                
+                // Clear data
+                picks = {};
+                updatePicksCount();
+                
+                alert('All picks have been reset!');
+            }
+        }
+
+        // Initialize picks count
+        updatePicksCount();
+    </script>
+</body>
+</html>
