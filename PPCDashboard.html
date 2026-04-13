@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PPC CRM Project Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111113; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const WEEKS = ["Week 1\nApr 7–13", "Week 2\nApr 14–20", "Week 3\nApr 21–27", "Week 4\nApr 28–May 4"];
+
+const WORKSTREAMS = [
+  {
+    id: "discovery",
+    name: "Discovery & Data Collection",
+    lead: "Unassigned",
+    tasks: [
+      { name: "Bloomerang CRM data export & audit", week: [1], status: "not_started" },
+      { name: "Wix analytics export & donation flow mapping", week: [1], status: "not_started" },
+      { name: "Document Wix ↔ Bloomerang disconnect", week: [1], status: "not_started" },
+      { name: "Map all donation touchpoints (Wix sales vs Bloomerang gifts)", week: [1, 2], status: "not_started" },
+    ],
+  },
+  {
+    id: "data",
+    name: "Data Analysis & Segmentation",
+    lead: "Unassigned",
+    tasks: [
+      { name: "Pull Census ACS + IRS SOI data for 185xx ZIPs", week: [1, 2], status: "not_started" },
+      { name: "RFM analysis on Bloomerang donor export", week: [2], status: "not_started" },
+      { name: "Donor segmentation clustering (k-means)", week: [2, 3], status: "not_started" },
+      { name: "Geographic heatmap: donors vs service population", week: [3], status: "not_started" },
+    ],
+  },
+  {
+    id: "integration",
+    name: "Wix–Bloomerang Integration Solution",
+    lead: "Unassigned",
+    tasks: [
+      { name: "Research Wix ↔ Bloomerang native integrations & Zapier", week: [1, 2], status: "not_started" },
+      { name: "Prototype donation form swap (Bloomerang forms on Wix)", week: [2, 3], status: "not_started" },
+      { name: "Build attribution tracking recommendation", week: [3], status: "not_started" },
+      { name: "Document step-by-step implementation guide for Jessica", week: [3, 4], status: "not_started" },
+    ],
+  },
+  {
+    id: "automation",
+    name: "CRM Automation & Workflows",
+    lead: "Unassigned",
+    tasks: [
+      { name: "Audit current Bloomerang setup (fields, tags, segments)", week: [1, 2], status: "not_started" },
+      { name: "Design donor welcome journey (Journey Automation)", week: [2, 3], status: "not_started" },
+      { name: "Design post-event stewardship sequence", week: [2, 3], status: "not_started" },
+      { name: "Build lapsed donor re-engagement workflow", week: [3], status: "not_started" },
+    ],
+  },
+  {
+    id: "grants",
+    name: "Grant Research & Workflow Templates",
+    lead: "Unassigned",
+    tasks: [
+      { name: "Build PNC grant application checklist/template", week: [1, 2], status: "not_started" },
+      { name: "Research 3–5 additional grant opportunities", week: [2], status: "not_started" },
+      { name: "Create reusable grant tracking template in Bloomerang", week: [3], status: "not_started" },
+    ],
+  },
+  {
+    id: "deliverables",
+    name: "Paper & Presentation",
+    lead: "Unassigned",
+    tasks: [
+      { name: "Paper outline & section assignments", week: [2], status: "not_started" },
+      { name: "First drafts of assigned sections", week: [3], status: "not_started" },
+      { name: "Paper revision & final edit", week: [4], status: "not_started" },
+      { name: "Presentation deck creation", week: [3, 4], status: "not_started" },
+      { name: "Rehearsal & final polish", week: [4], status: "not_started" },
+    ],
+  },
+];
+
+const MILESTONES = [
+  { week: 1, label: "All data collected & systems accessed" },
+  { week: 2, label: "Analysis underway, integration path chosen" },
+  { week: 3, label: "Recommendations finalized, paper drafted" },
+  { week: 4, label: "Final paper + presentation delivered" },
+];
+
+const STATUS_COLORS = {
+  not_started: { bg: "#2d2d2d", text: "#777", label: "Not Started" },
+  in_progress: { bg: "#1a3a5c", text: "#4da6ff", label: "In Progress" },
+  done: { bg: "#1a3d2e", text: "#4dcc8a", label: "Done" },
+  blocked: { bg: "#4a2020", text: "#ff6b6b", label: "Blocked" },
+};
+
+const STREAM_COLORS = ["#4da6ff", "#f0a040", "#4dcc8a", "#c084fc", "#ff6b8a", "#60d0d0"];
+
+function ProjectDashboard() {
+  const [streams, setStreams] = useState(WORKSTREAMS);
+  const [activeStream, setActiveStream] = useState(null);
+  const [view, setView] = useState("gantt");
+
+  const toggleStatus = (streamIdx, taskIdx) => {
+    const order = ["not_started", "in_progress", "done", "blocked"];
+    setStreams((prev) =>
+      prev.map((s, si) => {
+        if (si !== streamIdx) return s;
+        return {
+          ...s,
+          tasks: s.tasks.map((t, ti) => {
+            if (ti !== taskIdx) return t;
+            const cur = order.indexOf(t.status);
+            return { ...t, status: order[(cur + 1) % order.length] };
+          }),
+        };
+      })
+    );
+  };
+
+  const totalTasks = streams.reduce((a, s) => a + s.tasks.length, 0);
+  const doneTasks = streams.reduce((a, s) => a + s.tasks.filter((t) => t.status === "done").length, 0);
+  const inProgress = streams.reduce((a, s) => a + s.tasks.filter((t) => t.status === "in_progress").length, 0);
+
+  return (
+    <div style={{
+      fontFamily: "'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif",
+      background: "#111113",
+      color: "#e0e0e0",
+      minHeight: "100vh",
+      padding: "24px",
+    }}>
+      {/* Header */}
+      <div style={{ marginBottom: 24, borderBottom: "1px solid #2a2a2e", paddingBottom: 16 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
+          <div>
+            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#fff", letterSpacing: "-0.5px" }}>
+              Providence Pregnancy Center — CRM Improvement Project
+            </h1>
+            <p style={{ margin: "4px 0 0", fontSize: 13, color: "#888", fontWeight: 400 }}>
+              BUAN 587 · 6-person team · 4 weeks · Apr 7 – May 4, 2026
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            {["gantt", "tasks"].map((v) => (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                style={{
+                  padding: "6px 14px",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  fontFamily: "inherit",
+                  border: "1px solid " + (view === v ? "#4da6ff" : "#333"),
+                  borderRadius: 6,
+                  background: view === v ? "#1a3a5c" : "#1c1c1e",
+                  color: view === v ? "#4da6ff" : "#999",
+                  cursor: "pointer",
+                }}
+              >
+                {v === "gantt" ? "Gantt Chart" : "Task List"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats bar */}
+        <div style={{ display: "flex", gap: 24, marginTop: 16, flexWrap: "wrap" }}>
+          {[
+            { label: "Total Tasks", value: totalTasks, color: "#e0e0e0" },
+            { label: "In Progress", value: inProgress, color: "#4da6ff" },
+            { label: "Completed", value: doneTasks, color: "#4dcc8a" },
+            { label: "Completion", value: Math.round((doneTasks / totalTasks) * 100) + "%", color: "#f0a040" },
+          ].map((s) => (
+            <div key={s.label} style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+              <span style={{ fontSize: 20, fontWeight: 700, color: s.color, fontFamily: "'IBM Plex Mono', monospace" }}>
+                {s.value}
+              </span>
+              <span style={{ fontSize: 11, color: "#666", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                {s.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* GANTT VIEW */}
+      {view === "gantt" && (
+        <div style={{ overflowX: "auto" }}>
+          {/* Milestone bar */}
+          <div style={{ display: "grid", gridTemplateColumns: "220px repeat(4, 1fr)", gap: 0, marginBottom: 4 }}>
+            <div />
+            {MILESTONES.map((m, i) => (
+              <div key={i} style={{
+                padding: "6px 10px",
+                fontSize: 10,
+                color: "#f0a040",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.3px",
+                borderLeft: "2px solid #2a2a2e",
+              }}>
+                ◆ {m.label}
+              </div>
+            ))}
+          </div>
+
+          {/* Week headers */}
+          <div style={{ display: "grid", gridTemplateColumns: "220px repeat(4, 1fr)", gap: 0, marginBottom: 2 }}>
+            <div style={{ padding: "8px 12px", fontSize: 11, fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              Workstream
+            </div>
+            {WEEKS.map((w, i) => (
+              <div key={i} style={{
+                padding: "8px 12px",
+                fontSize: 12,
+                fontWeight: 600,
+                color: "#ccc",
+                borderLeft: "2px solid #2a2a2e",
+                whiteSpace: "pre-line",
+                lineHeight: 1.3,
+              }}>
+                {w}
+              </div>
+            ))}
+          </div>
+
+          {/* Streams and tasks */}
+          {streams.map((stream, si) => (
+            <div key={stream.id}>
+              <div
+                onClick={() => setActiveStream(activeStream === si ? null : si)}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "220px repeat(4, 1fr)",
+                  cursor: "pointer",
+                  background: activeStream === si ? "#1a1a1e" : "transparent",
+                  borderTop: "1px solid #222",
+                }}
+              >
+                <div style={{
+                  padding: "10px 12px",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: STREAM_COLORS[si],
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}>
+                  <span style={{ fontSize: 10, transition: "transform 0.2s", transform: activeStream === si ? "rotate(90deg)" : "rotate(0)", display: "inline-block" }}>
+                    ▶
+                  </span>
+                  {stream.name}
+                </div>
+                {[1, 2, 3, 4].map((week) => {
+                  const hasTasks = stream.tasks.some((t) => t.week.includes(week));
+                  return (
+                    <div key={week} style={{
+                      borderLeft: "2px solid #2a2a2e",
+                      padding: "10px 8px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}>
+                      {hasTasks && (
+                        <div style={{
+                          height: 8,
+                          width: "100%",
+                          borderRadius: 4,
+                          background: STREAM_COLORS[si] + "40",
+                          border: "1px solid " + STREAM_COLORS[si] + "60",
+                        }} />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {activeStream === si && stream.tasks.map((task, ti) => (
+                <div
+                  key={ti}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "220px repeat(4, 1fr)",
+                    background: "#141416",
+                    borderTop: "1px solid #1e1e22",
+                  }}
+                >
+                  <div style={{
+                    padding: "7px 12px 7px 32px",
+                    fontSize: 12,
+                    color: "#bbb",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    lineHeight: 1.3,
+                  }}>
+                    <span
+                      onClick={(e) => { e.stopPropagation(); toggleStatus(si, ti); }}
+                      title="Click to cycle status"
+                      style={{
+                        width: 10,
+                        height: 10,
+                        minWidth: 10,
+                        borderRadius: 3,
+                        background: STATUS_COLORS[task.status].bg,
+                        border: "2px solid " + STATUS_COLORS[task.status].text,
+                        cursor: "pointer",
+                      }}
+                    />
+                    <span style={{
+                      color: task.status === "done" ? "#666" : "#bbb",
+                      textDecoration: task.status === "done" ? "line-through" : "none",
+                    }}>
+                      {task.name}
+                    </span>
+                  </div>
+                  {[1, 2, 3, 4].map((week) => (
+                    <div key={week} style={{
+                      borderLeft: "2px solid #2a2a2e",
+                      padding: "7px 8px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}>
+                      {task.week.includes(week) && (
+                        <div style={{
+                          height: 6,
+                          width: "100%",
+                          borderRadius: 3,
+                          background: "linear-gradient(90deg, " + STREAM_COLORS[si] + "90, " + STREAM_COLORS[si] + "50)",
+                        }} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
+
+          <p style={{ fontSize: 11, color: "#555", marginTop: 12, fontStyle: "italic" }}>
+            Click a workstream to expand tasks · Click the colored square next to a task to cycle its status
+          </p>
+        </div>
+      )}
+
+      {/* TASK LIST VIEW */}
+      {view === "tasks" && (
+        <div>
+          {streams.map((stream, si) => (
+            <div key={stream.id} style={{ marginBottom: 24 }}>
+              <h3 style={{
+                fontSize: 14,
+                fontWeight: 700,
+                color: STREAM_COLORS[si],
+                margin: "0 0 8px",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}>
+                <span style={{ width: 3, height: 16, background: STREAM_COLORS[si], borderRadius: 2, display: "inline-block" }} />
+                {stream.name}
+                <span style={{ fontSize: 11, color: "#666", fontWeight: 400 }}>· Lead: {stream.lead}</span>
+              </h3>
+              {stream.tasks.map((task, ti) => (
+                <div
+                  key={ti}
+                  onClick={() => toggleStatus(si, ti)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "8px 12px",
+                    marginBottom: 2,
+                    borderRadius: 6,
+                    background: "#1a1a1e",
+                    cursor: "pointer",
+                    border: "1px solid #222",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: 3,
+                      background: STATUS_COLORS[task.status].bg,
+                      border: "2px solid " + STATUS_COLORS[task.status].text,
+                    }} />
+                    <span style={{
+                      fontSize: 13,
+                      color: task.status === "done" ? "#666" : "#ccc",
+                      textDecoration: task.status === "done" ? "line-through" : "none",
+                    }}>
+                      {task.name}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                    <span style={{
+                      fontSize: 10,
+                      fontFamily: "'IBM Plex Mono', monospace",
+                      color: "#666",
+                      padding: "2px 6px",
+                      background: "#222",
+                      borderRadius: 4,
+                    }}>
+                      W{task.week.join("–")}
+                    </span>
+                    <span style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color: STATUS_COLORS[task.status].text,
+                      padding: "2px 6px",
+                      background: STATUS_COLORS[task.status].bg,
+                      borderRadius: 4,
+                    }}>
+                      {STATUS_COLORS[task.status].label}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+          <p style={{ fontSize: 11, color: "#555", fontStyle: "italic" }}>
+            Click any task to cycle its status: Not Started → In Progress → Done → Blocked
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.render(<ProjectDashboard />, document.getElementById("root"));
+</script>
+</body>
+</html>
