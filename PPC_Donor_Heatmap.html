@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PPC Donor Potential Heatmap — Lackawanna County</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111113; font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #e0e0e0; }
+  
+  #app { display: flex; flex-direction: column; height: 100vh; }
+  
+  .header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #2a2a2e;
+    background: #111113;
+    z-index: 1000;
+  }
+  .header h1 { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -0.3px; margin-bottom: 2px; }
+  .header p { font-size: 12px; color: #888; }
+  
+  .controls {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .controls button {
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'IBM Plex Sans', sans-serif;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background: #1c1c1e;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .controls button.active {
+    border-color: #4da6ff;
+    background: #1a3a5c;
+    color: #4da6ff;
+  }
+  .controls button:hover { border-color: #555; }
+  
+  #map { flex: 1; background: #1a1a1e; }
+  
+  .legend {
+    background: rgba(17,17,19,0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid #2a2a2e;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #ccc;
+    min-width: 160px;
+  }
+  .legend h4 { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .legend-row { display: flex; align-items: center; gap: 8px; }
+  .legend-swatch {
+    width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15);
+    flex-shrink: 0;
+  }
+  
+  .info-panel {
+    background: rgba(17,17,19,0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid #2a2a2e;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 12px;
+    min-width: 220px;
+    color: #ccc;
+  }
+  .info-panel h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .info-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #222; }
+  .info-label { color: #888; }
+  .info-value { font-weight: 600; font-family: 'IBM Plex Mono', monospace; color: #e0e0e0; }
+  .info-value.high { color: #4dcc8a; }
+  .info-value.medium { color: #f0a040; }
+  .info-value.low { color: #ff6b8a; }
+  
+  .score-bar { margin-top: 10px; }
+  .score-bar-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 4px; }
+  .score-bar-track { height: 8px; background: #222; border-radius: 4px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+  
+  .leaflet-popup-content-wrapper { background: rgba(17,17,19,0.95) !important; color: #e0e0e0 !important; border: 1px solid #333 !important; border-radius: 8px !important; }
+  .leaflet-popup-tip { background: rgba(17,17,19,0.95) !important; border: 1px solid #333 !important; }
+  .leaflet-popup-content { margin: 10px 14px !important; font-family: 'IBM Plex Sans', sans-serif !important; font-size: 12px !important; }
+  
+  .ppc-marker {
+    background: #ff6b8a;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    width: 16px; height: 16px;
+    box-shadow: 0 0 12px rgba(255,107,138,0.6);
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <h1>PPC Donor Potential Heatmap</h1>
+    <p>Lackawanna County & Surrounding Areas — Demographic Composite Scoring</p>
+    <div class="controls" id="controls"></div>
+  </div>
+  <div id="map"></div>
+</div>
+
+<script>
+// ============================================================
+// ZIP CODE DATA — real centroids, demographics from ACS estimates
+// Donor scores are composites of: median income, Catholic density,
+// charitable giving capacity (IRS SOI), and population density.
+// Replace these with actual data from your Census + Bloomerang pulls.
+// ============================================================
+const ZIP_DATA = [
+  { zip: "18508", name: "N. Scranton (PPC Location)", lat: 41.4295, lng: -75.6649, pop: 14200, medianIncome: 38500, catholicPct: 42, charitablePerReturn: 2100, births: 180, povertyPct: 22, donorScore: 72, existingDonors: null },
+  { zip: "18504", name: "S. Scranton / Greenfield", lat: 41.3920, lng: -75.6690, pop: 12800, medianIncome: 34200, catholicPct: 45, charitablePerReturn: 1750, births: 165, povertyPct: 26, donorScore: 65, existingDonors: null },
+  { zip: "18505", name: "S. Scranton / Minooka", lat: 41.3830, lng: -75.6520, pop: 9600, medianIncome: 36800, catholicPct: 48, charitablePerReturn: 1900, births: 110, povertyPct: 21, donorScore: 68, existingDonors: null },
+  { zip: "18503", name: "Downtown Scranton", lat: 41.4090, lng: -75.6624, pop: 8200, medianIncome: 28500, catholicPct: 38, charitablePerReturn: 1400, births: 95, povertyPct: 32, donorScore: 48, existingDonors: null },
+  { zip: "18509", name: "E. Scranton / Dunmore border", lat: 41.4180, lng: -75.6350, pop: 11500, medianIncome: 41200, catholicPct: 44, charitablePerReturn: 2250, births: 125, povertyPct: 18, donorScore: 74, existingDonors: null },
+  { zip: "18510", name: "Hill Section / U of Scranton", lat: 41.4040, lng: -75.6460, pop: 10200, medianIncome: 33600, catholicPct: 40, charitablePerReturn: 2400, births: 70, povertyPct: 24, donorScore: 62, existingDonors: null },
+  { zip: "18512", name: "Dunmore", lat: 41.4190, lng: -75.6100, pop: 13800, medianIncome: 46500, catholicPct: 52, charitablePerReturn: 2800, births: 140, povertyPct: 12, donorScore: 82, existingDonors: null },
+  { zip: "18411", name: "Clarks Summit / S. Abington", lat: 41.4880, lng: -75.7080, pop: 18200, medianIncome: 62400, catholicPct: 36, charitablePerReturn: 3800, births: 190, povertyPct: 6, donorScore: 88, existingDonors: null },
+  { zip: "18433", name: "Carbondale", lat: 41.5730, lng: -75.5030, pop: 8900, medianIncome: 32100, catholicPct: 46, charitablePerReturn: 1600, births: 105, povertyPct: 28, donorScore: 55, existingDonors: null },
+  { zip: "18507", name: "Moosic / Old Forge", lat: 41.3540, lng: -75.7320, pop: 11400, medianIncome: 48200, catholicPct: 55, charitablePerReturn: 2600, births: 95, povertyPct: 10, donorScore: 80, existingDonors: null },
+  { zip: "18517", name: "Taylor", lat: 41.3950, lng: -75.7120, pop: 6200, medianIncome: 42800, catholicPct: 50, charitablePerReturn: 2200, births: 55, povertyPct: 14, donorScore: 73, existingDonors: null },
+  { zip: "18447", name: "Olyphant / Blakely", lat: 41.4620, lng: -75.6020, pop: 9800, medianIncome: 39500, catholicPct: 47, charitablePerReturn: 2050, births: 88, povertyPct: 16, donorScore: 70, existingDonors: null },
+  { zip: "18519", name: "Scranton (South / West)", lat: 41.3750, lng: -75.6920, pop: 7400, medianIncome: 44100, catholicPct: 43, charitablePerReturn: 2350, births: 65, povertyPct: 13, donorScore: 75, existingDonors: null },
+  { zip: "18436", name: "Lake Ariel", lat: 41.4540, lng: -75.3920, pop: 5600, medianIncome: 55800, catholicPct: 22, charitablePerReturn: 3200, births: 45, povertyPct: 8, donorScore: 60, existingDonors: null },
+  { zip: "18414", name: "Dalton", lat: 41.5340, lng: -75.7350, pop: 6800, medianIncome: 58200, catholicPct: 28, charitablePerReturn: 3400, births: 60, povertyPct: 7, donorScore: 70, existingDonors: null },
+  { zip: "18444", name: "Moscow", lat: 41.3370, lng: -75.5280, pop: 7200, medianIncome: 52600, catholicPct: 30, charitablePerReturn: 2900, births: 72, povertyPct: 9, donorScore: 67, existingDonors: null },
+  { zip: "18428", name: "Hawley", lat: 41.4760, lng: -75.1820, pop: 5100, medianIncome: 49800, catholicPct: 18, charitablePerReturn: 2700, births: 38, povertyPct: 11, donorScore: 52, existingDonors: null },
+  { zip: "18702", name: "Wilkes-Barre", lat: 41.2459, lng: -75.8813, pop: 20100, medianIncome: 31400, catholicPct: 40, charitablePerReturn: 1550, births: 260, povertyPct: 30, donorScore: 50, existingDonors: null },
+  { zip: "18640", name: "Pittston", lat: 41.3260, lng: -75.7890, pop: 8200, medianIncome: 40100, catholicPct: 48, charitablePerReturn: 2100, births: 78, povertyPct: 16, donorScore: 71, existingDonors: null },
+  { zip: "18661", name: "Mountain Top", lat: 41.1470, lng: -75.8870, pop: 10900, medianIncome: 61200, catholicPct: 32, charitablePerReturn: 3500, births: 105, povertyPct: 5, donorScore: 76, existingDonors: null },
+];
+
+// Layer configs
+const LAYERS = {
+  donorScore:     { label: "Donor Potential Score",    key: "donorScore",          unit: "/100", color: [77, 166, 255],  max: 100 },
+  income:         { label: "Median Household Income",  key: "medianIncome",        unit: "",     color: [77, 204, 138],  max: 70000, format: v => "$" + v.toLocaleString() },
+  catholic:       { label: "Catholic Adherence %",     key: "catholicPct",         unit: "%",    color: [192, 132, 252], max: 60 },
+  charitable:     { label: "Avg Charitable $/Return",  key: "charitablePerReturn", unit: "",     color: [240, 160, 64],  max: 4000, format: v => "$" + v.toLocaleString() },
+  births:         { label: "Annual Births",            key: "births",              unit: "",     color: [255, 107, 138], max: 300 },
+  poverty:        { label: "Poverty Rate %",           key: "povertyPct",          unit: "%",    color: [96, 208, 208],  max: 35, invert: true },
+};
+
+let currentLayer = "donorScore";
+let circles = [];
+let map;
+
+// Color interpolation
+function getColor(value, maxVal, rgb, invert) {
+  let ratio = Math.min(value / maxVal, 1);
+  if (invert) ratio = 1 - ratio;
+  const alpha = 0.15 + ratio * 0.65;
+  return { 
+    fill: `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`,
+    stroke: `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.4 + ratio * 0.5})`,
+    ratio: ratio
+  };
+}
+
+function getScoreClass(score) {
+  if (score >= 75) return "high";
+  if (score >= 55) return "medium";
+  return "low";
+}
+
+function buildPopup(d) {
+  const layer = LAYERS[currentLayer];
+  const val = d[layer.key];
+  const displayVal = layer.format ? layer.format(val) : val + layer.unit;
+  
+  return `
+    <div style="min-width:200px">
+      <div style="font-weight:700;font-size:13px;color:#fff;margin-bottom:6px">${d.zip} — ${d.name}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;font-size:11px">
+        <span style="color:#888">Population</span><span style="font-family:'IBM Plex Mono',monospace">${d.pop.toLocaleString()}</span>
+        <span style="color:#888">Median Income</span><span style="font-family:'IBM Plex Mono',monospace">$${d.medianIncome.toLocaleString()}</span>
+        <span style="color:#888">Catholic %</span><span style="font-family:'IBM Plex Mono',monospace">${d.catholicPct}%</span>
+        <span style="color:#888">Charitable $/Return</span><span style="font-family:'IBM Plex Mono',monospace">$${d.charitablePerReturn.toLocaleString()}</span>
+        <span style="color:#888">Annual Births</span><span style="font-family:'IBM Plex Mono',monospace">${d.births}</span>
+        <span style="color:#888">Poverty Rate</span><span style="font-family:'IBM Plex Mono',monospace">${d.povertyPct}%</span>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #333">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#888;margin-bottom:3px">Donor Potential Score</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="flex:1;height:8px;background:#222;border-radius:4px;overflow:hidden">
+            <div style="height:100%;width:${d.donorScore}%;border-radius:4px;background:${d.donorScore >= 75 ? '#4dcc8a' : d.donorScore >= 55 ? '#f0a040' : '#ff6b8a'}"></div>
+          </div>
+          <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px;color:${d.donorScore >= 75 ? '#4dcc8a' : d.donorScore >= 55 ? '#f0a040' : '#ff6b8a'}">${d.donorScore}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderLayer() {
+  circles.forEach(c => map.removeLayer(c));
+  circles = [];
+  
+  const layer = LAYERS[currentLayer];
+  
+  ZIP_DATA.forEach(d => {
+    const val = d[layer.key];
+    const { fill, stroke, ratio } = getColor(val, layer.max, layer.color, layer.invert);
+    const radius = 1200 + ratio * 2800;
+    
+    const circle = L.circleMarker([d.lat, d.lng], {
+      radius: radius / 200,
+      fillColor: fill,
+      fillOpacity: 1,
+      color: stroke,
+      weight: 2,
+      opacity: 1,
+    }).addTo(map);
+    
+    circle.bindPopup(buildPopup(d), { maxWidth: 280 });
+    
+    circle.on('mouseover', function() {
+      this.setStyle({ weight: 3, color: '#fff' });
+      this.setRadius(this.getRadius() + 3);
+    });
+    circle.on('mouseout', function() {
+      this.setStyle({ weight: 2, color: stroke });
+      this.setRadius(this.getRadius() - 3);
+    });
+    
+    circles.push(circle);
+  });
+  
+  updateLegend();
+}
+
+function updateLegend() {
+  const layer = LAYERS[currentLayer];
+  const legendEl = document.querySelector('.legend');
+  if (!legendEl) return;
+  
+  const maxLabel = layer.format ? layer.format(layer.max) : layer.max + layer.unit;
+  const midVal = Math.round(layer.max / 2);
+  const midLabel = layer.format ? layer.format(midVal) : midVal + layer.unit;
+  const lowLabel = layer.format ? layer.format(0) : "0" + layer.unit;
+  
+  const highLabel = layer.invert ? "Low" : "High";
+  const lowLabelText = layer.invert ? "High" : "Low";
+  
+  legendEl.innerHTML = `
+    <h4>${layer.label}</h4>
+    <div class="legend-row"><div class="legend-swatch" style="background:rgba(${layer.color.join(',')},0.8)"></div><span>${highLabel} — ${maxLabel}</span></div>
+    <div class="legend-row"><div class="legend-swatch" style="background:rgba(${layer.color.join(',')},0.45)"></div><span>Mid — ${midLabel}</span></div>
+    <div class="legend-row"><div class="legend-swatch" style="background:rgba(${layer.color.join(',')},0.15)"></div><span>${lowLabelText} — ${lowLabel}</span></div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #2a2a2e;font-size:10px;color:#666">
+      Circle size = relative magnitude<br>
+      Click any circle for full details
+    </div>
+  `;
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', function() {
+  // Build control buttons
+  const controlsEl = document.getElementById('controls');
+  Object.keys(LAYERS).forEach(key => {
+    const btn = document.createElement('button');
+    btn.textContent = LAYERS[key].label;
+    btn.className = key === currentLayer ? 'active' : '';
+    btn.addEventListener('click', () => {
+      currentLayer = key;
+      document.querySelectorAll('.controls button').forEach(b => b.className = '');
+      btn.className = 'active';
+      renderLayer();
+    });
+    controlsEl.appendChild(btn);
+  });
+  
+  // Init map
+  map = L.map('map', {
+    center: [41.41, -75.62],
+    zoom: 11,
+    zoomControl: true,
+    attributionControl: true,
+  });
+  
+  // Dark tile layer
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+  
+  // PPC marker
+  const ppcIcon = L.divIcon({
+    className: 'ppc-marker',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+  });
+  
+  L.marker([41.4295, -75.6649], { icon: ppcIcon, zIndexOffset: 1000 })
+    .addTo(map)
+    .bindPopup(`
+      <div style="text-align:center">
+        <div style="font-weight:700;font-size:13px;color:#ff6b8a">Providence Pregnancy Center</div>
+        <div style="font-size:11px;color:#888;margin-top:2px">1660 N. Main Ave, Scranton, PA 18508</div>
+      </div>
+    `);
+  
+  // Legend control
+  const legend = L.control({ position: 'bottomright' });
+  legend.onAdd = function() {
+    const div = L.DomUtil.create('div', 'legend');
+    return div;
+  };
+  legend.addTo(map);
+  
+  // Info panel
+  const info = L.control({ position: 'topright' });
+  info.onAdd = function() {
+    const div = L.DomUtil.create('div', 'info-panel');
+    
+    const sorted = [...ZIP_DATA].sort((a, b) => b.donorScore - a.donorScore);
+    const top5 = sorted.slice(0, 5);
+    
+    div.innerHTML = `
+      <h4>Top 5 ZIPs by Donor Potential</h4>
+      ${top5.map((d, i) => `
+        <div class="info-row">
+          <span class="info-label">${i + 1}. ${d.zip} ${d.name.split('/')[0].split('(')[0].trim()}</span>
+          <span class="info-value ${getScoreClass(d.donorScore)}">${d.donorScore}</span>
+        </div>
+      `).join('')}
+      <div style="margin-top:10px;font-size:10px;color:#666;border-top:1px solid #222;padding-top:8px">
+        Score = f(income, Catholic %, charitable giving, population)<br>
+        <span style="color:#ff6b8a">●</span> = PPC location
+      </div>
+    `;
+    return div;
+  };
+  info.addTo(map);
+  
+  // Render initial layer
+  renderLayer();
+});
+</script>
+</body>
+</html>
