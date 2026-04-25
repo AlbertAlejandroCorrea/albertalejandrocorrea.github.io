@@ -1,0 +1,93 @@
+
+<h2 class="sr-only">Business Model Canvas for Providence Pregnancy Center, adapted for nonprofit operations with dual customer segments (clients served and donors/supporters).</h2>
+<style>
+  .bmc{font-family:var(--font-sans);padding:1rem 0;color:var(--color-text-primary)}
+  .bmc h3{font-size:18px;font-weight:500;margin:0 0 4px}
+  .bmc .sub{font-size:13px;color:var(--color-text-secondary);margin:0 0 1rem}
+  .grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;grid-template-rows:auto auto auto;gap:1px;background:var(--color-border-tertiary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+  .cell{background:var(--color-background-primary);padding:12px 14px;cursor:pointer;transition:background .15s}
+  .cell:hover{background:var(--color-background-secondary)}
+  .cell.active{background:var(--color-background-secondary)}
+  .cell-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+  .cell-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .cell-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.4px;color:var(--color-text-secondary)}
+  .cell-items{list-style:none;padding:0;margin:0}
+  .cell-items li{font-size:12px;color:var(--color-text-primary);padding:3px 0;line-height:1.4}
+  .cell-items li::before{content:"";display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--color-border-secondary);margin-right:8px;vertical-align:middle}
+  .c-kp{grid-column:1;grid-row:1/3}
+  .c-ka{grid-column:2;grid-row:1}
+  .c-kr{grid-column:2;grid-row:2}
+  .c-vp{grid-column:3;grid-row:1/3}
+  .c-cr{grid-column:4;grid-row:1}
+  .c-ch{grid-column:4;grid-row:2}
+  .c-cs{grid-column:5;grid-row:1/3}
+  .c-cost{grid-column:1/4;grid-row:3}
+  .c-rev{grid-column:4/6;grid-row:3}
+  .detail{margin-top:12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-size:13px;color:var(--color-text-secondary);line-height:1.6;display:none}
+  .detail.show{display:block}
+  .detail strong{color:var(--color-text-primary);font-weight:500}
+  .note{margin-top:12px;font-size:11px;color:var(--color-text-tertiary);font-style:italic}
+</style>
+<div class="bmc">
+  <h3>Business model canvas</h3>
+  <p class="sub">Providence Pregnancy Center — adapted for nonprofit dual-segment model</p>
+  <div class="grid" id="canvas"></div>
+  <div class="detail" id="detail"></div>
+  <p class="note">Click any block to see CRM-specific recommendations for that area</p>
+</div>
+<script>
+const blocks = [
+  { id:"kp", cls:"c-kp", title:"Key partners", dot:"#7F77DD",
+    items:["Diocese of Scranton (parish network)","Standing With You (SWY) referral partner","Local parishes (St. Mary's, etc.)","PreBorn! (potential ultrasound/training)","Bloomerang (CRM + fundraising platform)","University of Scranton (interns, events)","Happenings Magazine (advertising)","Community donors and sponsors"],
+    detail:"<strong>CRM angle:</strong> Bloomerang can tag and segment partners vs. donors vs. sponsors. Parish relationships are PPC's most powerful channel — each pastor who announces PPC to their congregation is essentially a referral partner. Track which parishes generate the most donors and volunteers using source codes on donation forms. The SWY partnership brings digital referrals for clients but currently has no tracking back into Bloomerang." },
+  { id:"ka", cls:"c-ka", title:"Key activities", dot:"#1D9E75",
+    items:["Peer counseling and client intake","Material assistance distribution","Casa de Maria residential program","Annual Dinner and fundraising events","Garden of Hope capital campaign","ReBourn Boutique operations","Donor cultivation and stewardship","Volunteer recruitment and coordination"],
+    detail:"<strong>CRM angle:</strong> Each of these activities generates data that should flow into Bloomerang. Currently, event ticket sales go through Square/Wix while donations go through Bloomerang — creating the disconnect Jessica described. The highest-impact automation would be a post-event stewardship journey: everyone who attends the Annual Dinner gets an automated thank-you, impact update at 30 days, and a recurring gift ask at 60 days." },
+  { id:"kr", cls:"c-kr", title:"Key resources", dot:"#1D9E75",
+    items:["Jessica Freyne (Executive Director)","Heather Murphy (Dir. of Philanthropy)","Casa de Maria facility (4 beds)","Trained peer counseling volunteers","ReBourn Boutique inventory","Bloomerang CRM + Wix website","Donated goods (diapers, formula, clothing)","Faith-based community trust"],
+    detail:"<strong>CRM angle:</strong> With essentially two full-time staff, every manual process is a bottleneck. Bloomerang's Journey Automation can replace manual donor follow-up. The volunteer base is an untapped resource — Bloomerang's volunteer management add-on ($119/mo) could track volunteer hours and identify which volunteers are also donors (or should be asked to become donors). The biggest resource gap is digital marketing capacity, which is now being addressed by the U of Scranton student." },
+  { id:"vp", cls:"c-vp", title:"Value propositions", dot:"#D85A30",
+    items:["Free, confidential pregnancy support","Material assistance (no cost to clients)","Safe housing during and after pregnancy","Post-abortion healing and counseling","Community of faith-based support","Donor impact: direct, visible, local","Sponsor visibility at major events","Tax-deductible charitable giving"],
+    detail:"<strong>CRM angle:</strong> PPC has two distinct value propositions — one for clients (free support services) and one for donors (tangible local impact). The website currently doesn't differentiate these journeys well. Bloomerang donation forms should emphasize the donor value prop with impact statements: 'Your $50 provides a month of diapers for one mother.' Segmenting the CRM into client-facing vs. donor-facing workflows acknowledges that PPC serves two very different 'customers.'" },
+  { id:"cr", cls:"c-cr", title:"Customer relationships", dot:"#D4537E",
+    items:["1:1 peer counseling (clients)","Baby Bucks incentive program (clients)","Annual Dinner attendance (donors)","Personal thank-you calls (major donors)","Parish announcements (community)","Facebook engagement (general)","Email/mail appeals (donors)","Brick/bench naming (capital donors)"],
+    detail:"<strong>CRM angle:</strong> The Baby Bucks program is interesting — it's essentially a loyalty/engagement program for clients, similar to what a for-profit CRM would call a rewards program. Bloomerang's engagement meter does something analogous for donors, scoring them on recency, frequency, and interaction depth. The gap is between event attendees and ongoing donors: someone buys a dinner ticket but never gets a follow-up ask. Automated stewardship journeys close this gap." },
+  { id:"ch", cls:"c-ch", title:"Channels", dot:"#D4537E",
+    items:["Wix website (ppcscranton.org)","Facebook (primary social)","Instagram (underdeveloped, 199 followers)","Bloomerang donation forms","Square checkout (event tickets)","Happenings Magazine ads","Parish bulletin inserts","ReBourn Boutique (walk-in)","GiveSendGo / GiveGab"],
+    detail:"<strong>CRM angle:</strong> This is the core problem your project should solve. Donations arrive through at least 3 disconnected channels: Wix/Square, Bloomerang, and possibly cash/check at events. Each channel creates its own data silo. The fix is to consolidate online giving onto Bloomerang's embedded forms (replacing the Wix/Square checkout) so every digital donation auto-creates a constituent record. For offline gifts, establish a data entry protocol so cash and check donations are logged into Bloomerang within 48 hours." },
+  { id:"cs", cls:"c-cs", title:"Customer segments", dot:"#378ADD",
+    items:["CLIENTS SERVED:","Pregnant women in crisis","Post-abortive women seeking healing","Mothers needing material assistance","Casa de Maria residents","","DONORS/SUPPORTERS:","Catholic parishioners (NEPA)","Event attendees and sponsors","Parish communities","Pro-life supporters","Corporate/foundation grantors"],
+    detail:"<strong>CRM angle:</strong> The dual-segment model is critical. Most CRM recommendations focus only on the donor side, but PPC also needs to track client outcomes — how many women served, what services they received, how long they stayed at Casa de Maria. Bloomerang isn't a case management tool, so client tracking may need a separate lightweight system (even a structured Google Sheet) that feeds summary metrics into donor communications. The IRS/Census data your team is pulling will help profile the donor segment geographically." },
+  { id:"cost", cls:"c-cost", title:"Cost structure", dot:"#E24B4A",
+    items:["Casa de Maria facility maintenance and utilities","Staff salaries (2 FTE)","Material assistance purchasing (diapers, formula, wipes, clothing)","Bloomerang CRM subscription (~$125/mo)","Wix website hosting","Annual Dinner event costs (venue, catering, entertainment)","Insurance and liability","ReBourn Boutique operating costs","Marketing and print materials"],
+    detail:"<strong>CRM angle:</strong> At roughly $1,500/year, Bloomerang is a meaningful line item for a small nonprofit. The ROI case is straightforward: if the CRM helps retain even 5-10 additional donors per year at an average gift of $100-200, it pays for itself. Track this metric explicitly in Bloomerang's retention dashboard so Jessica can justify the expense to her board. The bigger hidden cost is staff time spent on manual data entry and disconnected systems — automating donation receipt acknowledgments alone could save hours per week." },
+  { id:"rev", cls:"c-rev", title:"Revenue streams", dot:"#639922",
+    items:["Individual donations (one-time and recurring)","Annual Dinner ticket sales and sponsorships","Garden of Hope brick/bench purchases","ReBourn Boutique sales","Grant funding (SACF, PNC Foundation, others)","Parish collections and special appeals","Corporate matching gifts","In-kind donations (goods and services)"],
+    detail:"<strong>CRM angle:</strong> PPC's revenue is heavily event-dependent — the Annual Dinner is likely the single largest fundraising moment of the year. This creates cash flow volatility. Bloomerang's recurring giving tools can smooth this: after every event, run a campaign converting one-time donors to monthly givers. Even converting 10% of dinner attendees to $25/month recurring gifts would create a stable base. The ReBourn Boutique revenue should be tracked separately (it's earned income, not donations) — this distinction matters for grant applications." }
+];
+
+let active = null;
+const canvas = document.getElementById('canvas');
+const detailEl = document.getElementById('detail');
+
+blocks.forEach((b, i) => {
+  const div = document.createElement('div');
+  div.className = 'cell ' + b.cls;
+  div.id = 'block-' + b.id;
+  const items = b.items.map(item => {
+    if (!item) return '<li style="padding:1px 0;list-style:none">&nbsp;</li>';
+    if (item.endsWith(':')) return '<li style="font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;color:var(--color-text-secondary);padding:6px 0 2px"><span style="display:none"></span>' + item.slice(0,-1) + '</li>';
+    return '<li>' + item + '</li>';
+  }).join('');
+  div.innerHTML = '<div class="cell-head"><div class="cell-dot" style="background:'+b.dot+'"></div><span class="cell-title">'+b.title+'</span></div><ul class="cell-items">'+items+'</ul>';
+  div.onclick = () => {
+    if (active === i) { active = null; detailEl.classList.remove('show'); div.classList.remove('active'); return; }
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('active'));
+    active = i;
+    div.classList.add('active');
+    detailEl.innerHTML = '<div class="cell-head"><div class="cell-dot" style="background:'+b.dot+'"></div><span class="cell-title" style="font-size:13px">'+b.title+'</span></div>' + b.detail;
+    detailEl.classList.add('show');
+  };
+  canvas.appendChild(div);
+});
+</script>
