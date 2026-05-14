@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nonprofit RFM Analyzer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#111113;--bg-card:#1a1a1e;--bg-hover:#222226;--bg-input:#141416;
+  --blue:#4da6ff;--blue-bg:#1a3a5c;--green:#4dcc8a;--green-bg:#1a3d2e;
+  --rose:#ff6b8a;--rose-bg:#3a1520;--purple:#c084fc;--purple-bg:#2a1a3a;
+  --gold:#f0a040;--gold-bg:#3a2a10;--cyan:#60d0d0;
+  --text:#e0e0e0;--text-mid:#999;--text-dim:#666;--text-faint:#444;
+  --border:#2a2a2e;--shadow:0 2px 12px rgba(0,0,0,0.3);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:'IBM Plex Sans',system-ui,sans-serif;color:var(--text);line-height:1.5;min-height:100vh}
+.app{max-width:1080px;margin:0 auto;padding:24px 20px 60px}
+
+/* Header */
+.header{text-align:center;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.header h1{font-size:24px;font-weight:700;color:#fff;letter-spacing:-.5px;margin-bottom:4px}
+.header p{font-size:13px;color:var(--text-mid)}
+
+/* Upload zone */
+.upload-zone{border:2px dashed var(--border);border-radius:16px;padding:48px 32px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:24px;background:var(--bg-card)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-bg)}
+.upload-zone h2{font-size:18px;font-weight:600;color:#fff;margin-bottom:8px}
+.upload-zone p{font-size:13px;color:var(--text-mid);margin-bottom:16px}
+.upload-zone input{display:none}
+.upload-btn{display:inline-block;padding:8px 20px;font-size:13px;font-weight:600;font-family:inherit;border:1px solid var(--blue);border-radius:8px;background:var(--blue-bg);color:var(--blue);cursor:pointer;transition:all .15s;margin:4px}
+.upload-btn:hover{background:var(--blue);color:#fff}
+.template-link{font-size:12px;color:var(--text-dim);cursor:pointer;text-decoration:underline;transition:color .15s}
+.template-link:hover{color:var(--blue)}
+
+/* Loading */
+.loading{text-align:center;padding:60px;color:var(--text-mid)}
+.loading .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:24px}
+.kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center}
+.kpi-val{font-size:24px;font-weight:700;font-family:'IBM Plex Mono',monospace;margin-bottom:2px}
+.kpi-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.kpi.rose .kpi-val{color:var(--rose)}
+.kpi.green .kpi-val{color:var(--green)}
+.kpi.blue .kpi-val{color:var(--blue)}
+
+/* Sections */
+.section{margin-bottom:28px}
+.section-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Segments */
+.seg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:640px){.seg-grid{grid-template-columns:1fr}}
+.seg-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.seg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.seg-name{font-size:13px;font-weight:600;color:#fff}
+.seg-stats{font-size:11px;color:var(--text-dim)}
+.seg-bar-wrap{height:5px;background:var(--bg);border-radius:3px;margin-top:4px;overflow:hidden}
+.seg-bar{height:100%;border-radius:3px}
+.seg-info{flex:1;min-width:0}
+
+/* Chart */
+.chart-container{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.chart-header{padding:14px 18px 10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.chart-title{font-size:15px;font-weight:600;color:#fff}
+.chart-total{font-size:20px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--blue)}
+.slicer-area{padding:4px 18px 10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sl{display:inline-flex;gap:3px;flex-wrap:wrap;align-items:center}
+.sl-sep{color:var(--text-faint);font-size:12px;margin:0 2px}
+.pill{padding:4px 10px;font-size:11px;font-weight:600;font-family:inherit;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--text-dim);cursor:pointer;transition:all .12s}
+.pill:hover{border-color:var(--text-dim);color:var(--text)}
+.pill.on{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}
+.chart-area{padding:6px 18px 14px}
+.chart-wrap{display:flex;gap:0;height:180px}
+.y-axis{display:flex;flex-direction:column;justify-content:space-between;padding-right:6px;width:52px;flex-shrink:0}
+.y-tick{font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--text-faint);text-align:right;line-height:1}
+.chart{display:flex;align-items:flex-end;gap:2px;flex:1;height:100%;position:relative;border-left:1px solid var(--border);border-bottom:1px solid var(--border);padding:0 4px}
+.chart-grid{position:absolute;left:0;right:0;border-top:1px dashed var(--border);pointer-events:none}
+.bar-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0;height:100%;position:relative;z-index:1}
+.bar{border-radius:3px 3px 0 0;min-height:2px;width:80%;cursor:pointer;position:relative;transition:opacity .12s;flex-shrink:0}
+.bar:hover{opacity:.7}
+.bar-tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#fff;color:#111;font-size:10px;padding:4px 8px;border-radius:4px;white-space:nowrap;z-index:10;pointer-events:none;font-weight:500}
+.bar:hover .bar-tip{display:block}
+.bar-lbl{font-size:8px;color:var(--text-faint);margin-top:3px;text-align:center;height:12px;overflow:hidden}
+.chart-stats{display:flex;gap:16px;padding:8px 18px 14px;border-top:1px solid var(--border);flex-wrap:wrap;font-size:11px;color:var(--text-dim)}
+.chart-stats b{color:var(--text);font-weight:600}
+
+/* Compare */
+.compare-toggle{display:flex;align-items:center;gap:8px;margin:4px 0 12px;cursor:pointer;font-size:13px;color:var(--text-mid)}
+.cb-box{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.compare-toggle.on .cb-box{background:var(--purple);border-color:var(--purple)}
+.cb-check{color:#fff;font-size:11px;font-weight:700;display:none}
+.compare-toggle.on .cb-check{display:block}
+.pill.compare-on{background:var(--purple-bg);color:var(--purple);border-color:var(--purple)}
+.chart-container.compare{border-color:#3a2a5a}
+
+/* Tables */
+.tables{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.tables{grid-template-columns:1fr}}
+.table-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.table-head{padding:10px 14px;border-bottom:1px solid var(--border)}
+.table-head h4{font-size:14px;font-weight:600;color:#fff;margin:0}
+.table-head p{font-size:11px;color:var(--text-dim);margin:2px 0 0}
+.dtable{width:100%;border-collapse:collapse;font-size:12px}
+.dtable th{text-align:left;padding:6px 10px;color:var(--text-dim);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border)}
+.dtable td{padding:6px 10px;border-bottom:1px solid #1e1e22}
+.dtable tr:hover td{background:var(--bg-hover)}
+.dname{font-weight:600;color:#fff}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.tag-red{background:var(--rose-bg);color:var(--rose)}
+.tag-gold{background:var(--gold-bg);color:var(--gold)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+
+/* Footer */
+.footer{text-align:center;padding-top:24px;border-top:1px solid var(--border);font-size:11px;color:var(--text-faint);margin-top:32px}
+.footer a{color:var(--blue);text-decoration:none}
+
+/* Reset */
+.reset-btn{display:inline-block;padding:6px 16px;font-size:12px;font-weight:600;font-family:inherit;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:all .15s;margin-top:8px}
+.reset-btn:hover{border-color:var(--rose);color:var(--rose)}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const QM={Q1:['01','02','03'],Q2:['04','05','06'],Q3:['07','08','09'],Q4:['10','11','12']};
+const SEG_COLORS={'Champions':'#4da6ff','Loyal Donors':'#4dcc8a','New Donors':'#60d0d0','Potential Loyalists':'#c084fc','Needs Attention':'#f0a040',"Can't Lose Them":'#ff6b8a','At Risk (High Value)':'#E74C3C','At Risk':'#c0392b','Hibernating':'#666','Lost':'#444'};
+const SEG_ORDER=['Champions','Loyal Donors','Potential Loyalists','New Donors','Needs Attention',"Can't Lose Them",'At Risk (High Value)','At Risk','Hibernating','Lost'];
+
+let D=null;
+let primary={year:null,quarter:null,month:null};
+let compare={year:null,quarter:null,month:null};
+let showCompare=false;
+
+function fmt(n){return'$'+Math.round(n).toLocaleString()}
+
+function generateTemplate(){
+  const rows=[
+    ['DonorID','DonorName','Date','Amount','Type','Fund','Campaign'],
+    ['1001','Jane Smith','2025-01-15','100','Donation','Unrestricted','Annual Appeal'],
+    ['1002','John Doe','2025-01-20','50','Recurring Donation Payment','Unrestricted','Monthly Giving'],
+    ['1001','Jane Smith','2025-03-10','75','Donation','Restricted','Spring Campaign'],
+    ['1003','Mary Johnson','2025-02-14','250','Donation','Unrestricted','Annual Dinner'],
+  ];
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='RFM_Template.csv';
+  a.click();
+}
+
+function processData(rows){
+  // Parse transactions
+  const txns=[];
+  const headers=Object.keys(rows[0]).map(h=>h.trim().toLowerCase());
+  const getField=(row,names)=>{
+    for(const n of names){
+      for(const k of Object.keys(row)){
+        if(k.trim().toLowerCase()===n) return row[k];
+      }
+    }
+    return null;
+  };
+
+  rows.forEach(row=>{
+    const dateRaw=getField(row,['date','transaction date','gift date','donation date']);
+    const amount=parseFloat(getField(row,['amount','gift amount','donation amount','total']));
+    const id=getField(row,['donorid','donor id','accountid','account id','account number','constituent id','id']);
+    const name=getField(row,['donorname','donor name','name','full name','fullname']);
+    const type=getField(row,['type','entry type','entrytype','transaction type'])||'';
+    const fund=getField(row,['fund','fund name','fundname'])||'';
+    const campaign=getField(row,['campaign','campaign name','campaignname'])||'';
+
+    if(!dateRaw||isNaN(amount)||!id) return;
+
+    let date;
+    if(typeof dateRaw==='string'){
+      // Try multiple formats
+      const d=new Date(dateRaw);
+      if(!isNaN(d)) date=d;
+      else return;
+    } else if(dateRaw instanceof Date){
+      date=dateRaw;
+    } else return;
+
+    txns.push({date,amount,id:String(id).trim(),name:String(name||'Unknown').trim(),type:String(type),fund,campaign});
+  });
+
+  if(!txns.length) return null;
+
+  // Build donor profiles
+  const now=new Date();
+  const donors={};
+  txns.forEach(t=>{
+    if(!donors[t.id]) donors[t.id]={total:0,freq:0,first:null,last:null,name:t.name,recurring:false};
+    const d=donors[t.id];
+    d.total+=t.amount;d.freq++;d.name=t.name;
+    if(t.type.toLowerCase().includes('recurring')) d.recurring=true;
+    if(!d.first||t.date<d.first) d.first=t.date;
+    if(!d.last||t.date>d.last) d.last=t.date;
+  });
+
+  // RFM scoring
+  const rfm=Object.entries(donors).map(([id,d])=>({
+    id,name:d.name,
+    recency:Math.floor((now-d.last)/(1000*60*60*24)),
+    frequency:d.freq,
+    monetary:d.total,
+    avg_gift:d.total/d.freq,
+    recurring:d.recurring,
+    first:d.first,last:d.last
+  }));
+
+  const n=rfm.length;
+  const recSorted=[...rfm].sort((a,b)=>a.recency-b.recency).map(d=>d.recency);
+  const freqSorted=[...rfm].sort((a,b)=>a.frequency-b.frequency).map(d=>d.frequency);
+  const monSorted=[...rfm].sort((a,b)=>a.monetary-b.monetary).map(d=>d.monetary);
+
+  function qscore(val,slist,reverse){
+    for(let i=0;i<4;i++){
+      if(val<=slist[Math.floor(n*((i+1)*0.2))]) return reverse?(5-i):(i+1);
+    }
+    return reverse?1:5;
+  }
+
+  function segment(r,f,m){
+    if(r>=4&&f>=4&&m>=4) return'Champions';
+    if(r>=4&&f>=3&&m>=3) return'Loyal Donors';
+    if(r>=4&&f<=2) return'New Donors';
+    if(r>=3&&f>=3) return'Potential Loyalists';
+    if(r===3&&f<=2) return'Needs Attention';
+    if(r<=2&&f>=3&&m>=3) return'At Risk (High Value)';
+    if(r<=2&&f>=2) return'At Risk';
+    if(r<=2&&f<=1&&m<=2) return'Lost';
+    if(r<=2&&m>=4) return"Can't Lose Them";
+    return'Hibernating';
+  }
+
+  rfm.forEach(d=>{
+    d.r=qscore(d.recency,recSorted,true);
+    d.f=qscore(d.frequency,freqSorted,false);
+    d.m=qscore(d.monetary,monSorted,false);
+    d.seg=segment(d.r,d.f,d.m);
+  });
+
+  // Monthly revenue
+  const monthly={};const monthlyCount={};
+  txns.forEach(t=>{
+    const m=t.date.getFullYear()+'-'+String(t.date.getMonth()+1).padStart(2,'0');
+    monthly[m]=(monthly[m]||0)+t.amount;
+    monthlyCount[m]=(monthlyCount[m]||0)+1;
+  });
+
+  // Segments
+  const segments={};
+  rfm.forEach(d=>{
+    if(!segments[d.seg]) segments[d.seg]={count:0,total:0};
+    segments[d.seg].count++;segments[d.seg].total+=d.monetary;
+  });
+
+  // Totals
+  const totalRev=rfm.reduce((a,d)=>a+d.monetary,0);
+
+  return{
+    monthly,monthlyCount,segments,
+    totals:{
+      donors:n,revenue:totalRev,transactions:txns.length,
+      recurring:rfm.filter(d=>d.recurring).length,
+      oneTimePct:Math.round(rfm.filter(d=>d.frequency===1).length/n*1000)/10,
+      retentionRate:Math.round(rfm.filter(d=>d.frequency>=2).length/n*1000)/10,
+    },
+    topChampions:rfm.filter(d=>d.seg==='Champions').sort((a,b)=>b.monetary-a.monetary).slice(0,8).map(d=>({name:d.name,monetary:d.monetary,freq:d.frequency})),
+    topAtRisk:rfm.filter(d=>d.monetary>200&&d.recency>365).sort((a,b)=>b.monetary-a.monetary).slice(0,8).map(d=>({name:d.name,monetary:d.monetary,recency:d.recency})),
+    dateRange:{
+      from:new Date(Math.min(...txns.map(t=>t.date))),
+      to:new Date(Math.max(...txns.map(t=>t.date)))
+    }
+  };
+}
+
+function handleFile(file){
+  document.getElementById('app').innerHTML='<div class="header"><h1>Nonprofit RFM Analyzer</h1></div><div class="loading"><div class="spinner"></div>Processing '+file.name+'...</div>';
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='csv'||ext==='tsv'||ext==='txt'){
+    Papa.parse(file,{
+      header:true,dynamicTyping:true,skipEmptyLines:true,
+      complete:function(results){
+        D=processData(results.data);
+        if(D) render(); else showError('Could not parse the file. Check that it has Date, Amount, and DonorID columns.');
+      },
+      error:function(){showError('Failed to read the file.');}
+    });
+  } else {
+    showError('Please upload a CSV file. Download the template for the expected format.');
+  }
+}
+
+function showError(msg){
+  document.getElementById('app').innerHTML='<div class="header"><h1>Nonprofit RFM Analyzer</h1></div><div class="loading" style="color:var(--rose)">'+msg+'<br><br><button class="reset-btn" onclick="resetApp()">Try Again</button></div>';
+}
+
+function resetApp(){D=null;primary={year:null,quarter:null,month:null};compare={year:null,quarter:null,month:null};showCompare=false;renderUpload();}
+
+// Chart helpers
+const allMonths=()=>Object.keys(D.monthly).sort();
+const years=()=>[...new Set(allMonths().map(m=>m.split('-')[0]))];
+
+function resolve(sel){
+  let months=allMonths();
+  if(sel.year) months=months.filter(m=>m.startsWith(sel.year));
+  if(sel.quarter) months=months.filter(m=>QM[sel.quarter].includes(m.split('-')[1]));
+  if(sel.month) months=months.filter(m=>m.split('-')[1]===sel.month);
+  return months;
+}
+function describeFilter(sel){
+  if(!sel.year&&!sel.quarter&&!sel.month) return'All Time';
+  let p=[];if(sel.month)p.push(MN[parseInt(sel.month)-1]);if(sel.quarter)p.push(sel.quarter);if(sel.year)p.push(sel.year);return p.join(' ');
+}
+function quartersFor(sel){
+  let months=allMonths();if(sel.year)months=months.filter(m=>m.startsWith(sel.year));
+  const avail=new Set(months.map(m=>{const mo=m.split('-')[1];return Object.entries(QM).find(([q,ms])=>ms.includes(mo))?.[0];}));
+  return['Q1','Q2','Q3','Q4'].filter(q=>avail.has(q));
+}
+function monthsFor(sel){
+  let months=allMonths();if(sel.year)months=months.filter(m=>m.startsWith(sel.year));
+  if(sel.quarter)months=months.filter(m=>QM[sel.quarter].includes(m.split('-')[1]));
+  return[...new Set(months.map(m=>m.split('-')[1]))].sort();
+}
+
+window.clickYear=(p,y)=>{const s=p==='p'?primary:compare;s.year=s.year===y?null:y;s.quarter=null;s.month=null;render();};
+window.clickQ=(p,q)=>{const s=p==='p'?primary:compare;s.quarter=s.quarter===q?null:q;s.month=null;render();};
+window.clickMonth=(p,m)=>{const s=p==='p'?primary:compare;s.month=s.month===m?null:m;render();};
+window.toggleCompare=()=>{showCompare=!showCompare;render();};
+
+function renderSlicer(panel,sel,cls){
+  const availQ=quartersFor(sel),availM=monthsFor(sel);
+  let h='<div class="slicer-area"><div class="sl">';
+  h+='<button class="pill '+(sel.year===null?cls:'')+'" onclick="clickYear(\''+panel+'\',null)">All</button>';
+  years().forEach(y=>{h+='<button class="pill '+(sel.year===y?cls:'')+'" onclick="clickYear(\''+panel+'\',\''+y+'\')">'+y+'</button>';});
+  h+='</div>';
+  if(sel.year||sel.quarter){
+    h+='<span class="sl-sep">\u203A</span><div class="sl">';
+    availQ.forEach(q=>{h+='<button class="pill '+(sel.quarter===q?cls:'')+'" onclick="clickQ(\''+panel+'\',\''+q+'\')">'+q+'</button>';});
+    h+='</div>';
+  }
+  if((sel.year||sel.quarter)&&availM.length>1){
+    h+='<span class="sl-sep">\u203A</span><div class="sl">';
+    availM.forEach(m=>{h+='<button class="pill '+(sel.month===m?cls:'')+'" onclick="clickMonth(\''+panel+'\',\''+m+'\')">'+MN[parseInt(m)-1]+'</button>';});
+    h+='</div>';
+  }
+  return h+'</div>';
+}
+
+function renderBars(months,color){
+  if(!months.length) return'<div style="height:180px;display:flex;align-items:center;justify-content:center;color:var(--text-dim)">No data</div>';
+  const maxVal=Math.max(...months.map(m=>D.monthly[m]||0),1);
+  const ticks=5;
+  let h='<div class="chart-wrap"><div class="y-axis">';
+  for(let i=ticks;i>=0;i--){const v=Math.round(maxVal*i/ticks);h+='<div class="y-tick">'+(v>=1000?'$'+Math.round(v/1000)+'K':'$'+v)+'</div>';}
+  h+='</div><div class="chart">';
+  for(let i=1;i<ticks;i++) h+='<div class="chart-grid" style="top:'+(1-i/ticks)*100+'%"></div>';
+  months.forEach(m=>{
+    const v=D.monthly[m]||0,pct=v/maxVal*100,parts=m.split('-');
+    const lbl=MN[parseInt(parts[1])-1]+(months.length<=24?" '"+parts[0].slice(2):'');
+    const show=months.length<=24||(parseInt(parts[1])%3===1);
+    h+='<div class="bar-col"><div class="bar" style="height:'+pct+'%;background:'+color+'"><div class="bar-tip">'+MN[parseInt(parts[1])-1]+' '+parts[0]+': '+fmt(v)+'</div></div><div class="bar-lbl">'+(show?lbl:'')+'</div></div>';
+  });
+  return h+'</div></div>';
+}
+
+function renderChartPanel(panel,sel,color,cls,extraCls){
+  const months=resolve(sel),total=months.reduce((a,m)=>a+(D.monthly[m]||0),0);
+  const avg=months.length?Math.round(total/months.length):0;
+  const peak=months.length?Math.max(...months.map(m=>D.monthly[m]||0)):0;
+  let h='<div class="chart-container '+extraCls+'">';
+  h+='<div class="chart-header"><span class="chart-title">'+describeFilter(sel)+'</span><span class="chart-total" style="color:'+color+'">'+fmt(total)+'</span></div>';
+  h+=renderSlicer(panel,sel,cls);
+  h+='<div class="chart-area">'+renderBars(months,color)+'</div>';
+  h+='<div class="chart-stats"><div><b>'+months.length+'</b> months</div><div><b>'+fmt(avg)+'</b> avg/mo</div><div><b>'+fmt(peak)+'</b> peak</div></div>';
+  return h+'</div>';
+}
+
+function render(){
+  const t=D.totals;
+  const fromStr=D.dateRange.from.toLocaleDateString('en-US',{month:'short',year:'numeric'});
+  const toStr=D.dateRange.to.toLocaleDateString('en-US',{month:'short',year:'numeric'});
+
+  let h='<div class="header"><h1>Nonprofit RFM Analyzer</h1><p>'+t.donors.toLocaleString()+' donors \u00b7 '+fromStr+' \u2013 '+toStr+' <button class="reset-btn" onclick="resetApp()">Upload New File</button></p></div>';
+
+  // KPIs
+  h+='<div class="kpis">';
+  h+='<div class="kpi"><div class="kpi-val">'+t.donors.toLocaleString()+'</div><div class="kpi-label">Total Donors</div></div>';
+  h+='<div class="kpi"><div class="kpi-val blue">'+fmt(t.revenue)+'</div><div class="kpi-label">Lifetime Revenue</div></div>';
+  h+='<div class="kpi"><div class="kpi-val">'+t.transactions.toLocaleString()+'</div><div class="kpi-label">Transactions</div></div>';
+  h+='<div class="kpi rose"><div class="kpi-val">'+t.oneTimePct+'%</div><div class="kpi-label">One-Time Donors</div></div>';
+  h+='<div class="kpi green"><div class="kpi-val">'+t.retentionRate+'%</div><div class="kpi-label">Retention Rate</div></div>';
+  h+='<div class="kpi"><div class="kpi-val">'+t.recurring+'</div><div class="kpi-label">Recurring Donors</div></div>';
+  h+='</div>';
+
+  // Segments
+  const maxSeg=Math.max(...Object.values(D.segments).map(s=>s.total));
+  h+='<div class="section"><div class="section-title">RFM Segments</div><div class="seg-grid">';
+  SEG_ORDER.forEach(seg=>{
+    if(!D.segments[seg]) return;
+    const s=D.segments[seg],pct=(s.total/t.revenue*100).toFixed(1),col=SEG_COLORS[seg]||'#666';
+    h+='<div class="seg-card"><div class="seg-dot" style="background:'+col+'"></div><div class="seg-info"><div class="seg-name">'+seg+'</div><div class="seg-stats">'+s.count+' donors \u00b7 '+fmt(s.total)+' \u00b7 '+pct+'%</div><div class="seg-bar-wrap"><div class="seg-bar" style="width:'+(s.total/maxSeg*100)+'%;background:'+col+'"></div></div></div></div>';
+  });
+  h+='</div></div>';
+
+  // Revenue chart
+  h+='<div class="section"><div class="section-title">Monthly Revenue</div>';
+  h+=renderChartPanel('p',primary,'var(--blue)','on','');
+  h+='<div class="compare-toggle'+(showCompare?' on':'')+'" onclick="toggleCompare()"><div class="cb-box"><span class="cb-check">\u2713</span></div>Compare with another time period</div>';
+  if(showCompare) h+=renderChartPanel('c',compare,'var(--purple)','compare-on','compare');
+  h+='</div>';
+
+  // Tables
+  if(D.topChampions.length||D.topAtRisk.length){
+    h+='<div class="section"><div class="section-title">Key Donor Lists</div><div class="tables">';
+    if(D.topChampions.length){
+      h+='<div class="table-card"><div class="table-head"><h4>Champions</h4><p>Highest value, most engaged</p></div><table class="dtable"><thead><tr><th>Name</th><th>Lifetime</th><th>Gifts</th></tr></thead><tbody>';
+      D.topChampions.forEach(d=>{h+='<tr><td class="dname">'+d.name+'</td><td>'+fmt(d.monetary)+'</td><td><span class="tag tag-green">'+d.freq+' txns</span></td></tr>';});
+      h+='</tbody></table></div>';
+    }
+    if(D.topAtRisk.length){
+      h+='<div class="table-card"><div class="table-head"><h4>Needs Re-Engagement</h4><p>High value, silent 12+ months</p></div><table class="dtable"><thead><tr><th>Name</th><th>Lifetime</th><th>Status</th></tr></thead><tbody>';
+      D.topAtRisk.forEach(d=>{
+        const tag=d.recency>730?'tag-red':'tag-gold',label=d.recency>730?Math.round(d.recency/365)+'yr lapsed':d.recency+' days';
+        h+='<tr><td class="dname">'+d.name+'</td><td>'+fmt(d.monetary)+'</td><td><span class="tag '+tag+'">'+label+'</span></td></tr>';
+      });
+      h+='</tbody></table></div>';
+    }
+    h+='</div></div>';
+  }
+
+  h+='<div class="footer">Built by <a href="https://www.linkedin.com/in/albertalejandrocorrea/" target="_blank">Albert Correa</a> \u00b7 University of Scranton MSBA<br>All processing runs locally in your browser. No data is uploaded or stored.</div>';
+
+  document.getElementById('app').innerHTML=h;
+}
+
+function renderUpload(){
+  document.getElementById('app').innerHTML=`
+    <div class="header">
+      <h1>Nonprofit RFM Analyzer</h1>
+      <p>Drop in your donor transaction data and get an instant RFM segmentation dashboard</p>
+    </div>
+    <div class="upload-zone" id="dropzone">
+      <h2>Upload Transaction Data</h2>
+      <p>Drag and drop a CSV file, or click to browse.<br>Your data never leaves your browser.</p>
+      <input type="file" id="fileInput" accept=".csv,.tsv,.txt"/>
+      <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose File</button>
+      <br><br>
+      <span class="template-link" onclick="generateTemplate()">Download CSV template</span>
+    </div>
+    <div style="max-width:600px;margin:0 auto;padding:0 20px">
+      <div class="section-title" style="font-size:14px">Required Columns</div>
+      <div style="font-size:13px;color:var(--text-mid);margin-bottom:20px;line-height:1.8">
+        Your CSV needs at minimum these three columns (names are flexible):<br>
+        <span style="color:var(--blue);font-family:'IBM Plex Mono',monospace;font-size:12px">DonorID</span> \u2014 unique identifier per donor (account number, constituent ID, etc.)<br>
+        <span style="color:var(--blue);font-family:'IBM Plex Mono',monospace;font-size:12px">Date</span> \u2014 transaction date in any standard format (YYYY-MM-DD, MM/DD/YYYY, etc.)<br>
+        <span style="color:var(--blue);font-family:'IBM Plex Mono',monospace;font-size:12px">Amount</span> \u2014 donation amount in dollars<br><br>
+        Optional columns: <span style="color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:12px">DonorName, Type, Fund, Campaign</span>
+      </div>
+      <div class="section-title" style="font-size:14px">Works With</div>
+      <div style="font-size:13px;color:var(--text-mid);line-height:1.8">
+        Bloomerang, DonorPerfect, Little Green Light, Neon CRM, Kindful, Network for Good, or any system that exports transactions as CSV.
+      </div>
+    </div>
+  `;
+
+  const dz=document.getElementById('dropzone');
+  const fi=document.getElementById('fileInput');
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0]);});
+  fi.addEventListener('change',e=>{if(e.target.files.length)handleFile(e.target.files[0]);});
+}
+
+renderUpload();
+</script>
+</body>
+</html>
