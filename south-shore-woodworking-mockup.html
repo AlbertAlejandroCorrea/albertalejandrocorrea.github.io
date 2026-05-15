@@ -1,0 +1,2885 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="warm" data-page="home">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>South Shore Woodworking — Custom Fabrication on Long Island</title>
+<meta name="description" content="Custom fabrication shop on Long Island building brand activations, pop-ups, stages, mobile bars, and custom décor for agencies, brands, and venues across the NYC tri-state." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* ==========================================================================
+   SOUTH SHORE WOODWORKING — MOCKUP
+   Two themes in one file. Toggle top-right.
+   Theme A "warm" — Hoffer-faithful: cream, walnut, editorial serif, restrained
+   Theme B "dark" — Bolder/agency-grade: heavy black, oversized type, brutalist
+   ========================================================================== */
+
+/* ----- RESET ----- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden; }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; background: none; border: none; cursor: pointer; color: inherit; }
+ul { list-style: none; }
+
+/* ----- THEME TOKENS ----- */
+:root[data-theme="warm"] {
+  --bg: #F5F1EA;
+  --bg-elevated: #EBE5DA;
+  --ink: #1A1A1A;
+  --ink-soft: #4A4A4A;
+  --ink-muted: #8A8276;
+  --line: #D9D2C2;
+  --accent: #3D2B1F;
+  --accent-soft: #C9A77A;
+  --hero-overlay: rgba(26, 26, 26, 0.35);
+  --photo-bg: #C9BFA9;
+  --photo-bg-2: #B3A98F;
+  --photo-bg-3: #D9D2C2;
+  --font-display: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --display-weight: 400;
+  --display-tracking: -0.025em;
+  --shadow-card: 0 1px 2px rgba(26,26,26,.04), 0 8px 32px rgba(26,26,26,.04);
+}
+:root[data-theme="dark"] {
+  --bg: #0C0C0C;
+  --bg-elevated: #161616;
+  --ink: #F5F1EA;
+  --ink-soft: #BFBAB0;
+  --ink-muted: #7A7670;
+  --line: #2A2A2A;
+  --accent: #E9E2D2;
+  --accent-soft: #FF5B14;
+  --hero-overlay: rgba(0, 0, 0, 0.55);
+  --photo-bg: #2A2A2A;
+  --photo-bg-2: #1F1F1F;
+  --photo-bg-3: #353535;
+  --font-display: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --display-weight: 500;
+  --display-tracking: -0.04em;
+  --shadow-card: 0 0 0 1px rgba(255,255,255,.04);
+}
+
+/* ----- GLOBALS ----- */
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.55;
+  transition: background-color .35s ease, color .35s ease;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 1;
+  color: var(--ink);
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.serif-italic { font-family: var(--font-display); font-style: italic; font-weight: 400; }
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+@media (max-width: 768px) {
+  .container { padding: 0 20px; }
+}
+
+/* ----- HEADER ----- */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid transparent;
+  transition: background-color .35s ease, border-color .35s ease, padding .25s ease;
+  padding: 20px 0;
+}
+.site-header.scrolled {
+  border-bottom-color: var(--line);
+  padding: 14px 0;
+}
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.brand {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.brand small {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-top: 4px;
+}
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.nav a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  position: relative;
+  transition: color .2s ease;
+}
+.nav a:not(.cta)::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform .3s ease;
+}
+.nav a:not(.cta):hover::after,
+.nav a.active::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+.nav .has-sub {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+.nav .has-sub > span::after {
+  content: '▾';
+  font-size: 9px;
+  margin-left: 4px;
+  transition: transform .2s;
+  display: inline-block;
+}
+.nav .has-sub:hover > span::after { transform: rotate(180deg); }
+.subnav {
+  position: absolute;
+  top: 100%;
+  left: -16px;
+  margin-top: 16px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: 8px 0;
+  min-width: 260px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all .2s ease;
+  box-shadow: var(--shadow-card);
+}
+.nav .has-sub:hover .subnav {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.subnav a {
+  display: block;
+  padding: 10px 20px;
+  font-size: 13px;
+}
+.subnav a::after { display: none; }
+.subnav a:hover { background: var(--bg-elevated); }
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--ink);
+  transition: all .2s ease;
+  white-space: nowrap;
+}
+.cta-button:hover {
+  background: transparent;
+  color: var(--ink);
+}
+.cta-button .arrow { transition: transform .25s ease; }
+.cta-button:hover .arrow { transform: translateX(4px); }
+
+.cta-button.ghost {
+  background: transparent;
+  color: var(--ink);
+}
+.cta-button.ghost:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* Theme toggle */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-elevated);
+  border-radius: 999px;
+  padding: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-left: 8px;
+}
+.theme-toggle button {
+  padding: 7px 12px;
+  border-radius: 999px;
+  color: var(--ink-muted);
+  transition: all .2s ease;
+}
+.theme-toggle button.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* mobile nav */
+.menu-trigger { display: none; }
+@media (max-width: 1024px) {
+  .nav .nav-links { display: none; }
+  .menu-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+  }
+  .menu-trigger svg { width: 22px; height: 22px; }
+}
+
+/* ----- PAGE / SECTION FRAMING ----- */
+main { padding-top: 0; }
+.page { display: none; }
+.page.active { display: block; }
+section { padding: 96px 0; }
+@media (max-width: 768px) { section { padding: 64px 0; } }
+
+/* ----- HERO ----- */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, transparent 0%, var(--hero-overlay) 100%),
+    repeating-linear-gradient(135deg, var(--photo-bg-2), var(--photo-bg-2) 2px, var(--photo-bg) 2px, var(--photo-bg) 22px);
+}
+[data-theme="dark"] .hero-bg {
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(0,0,0,.7) 100%),
+    radial-gradient(ellipse at 30% 70%, #1F1F1F 0%, #0C0C0C 70%);
+}
+.hero-caption {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.55;
+  background: var(--bg);
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  z-index: 1;
+  text-align: center;
+  max-width: 90%;
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 0 32px 80px;
+  color: #fff;
+}
+[data-theme="warm"] .hero-content { color: #1A1A1A; }
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: end;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 24px; }
+}
+.hero h1 {
+  font-size: clamp(3rem, 8.5vw, 7.5rem);
+  line-height: 0.92;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  margin-bottom: 0;
+}
+[data-theme="dark"] .hero h1 {
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+.hero-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 12px;
+}
+.hero-sub {
+  font-size: 18px;
+  line-height: 1.45;
+  max-width: 32ch;
+  color: #fff;
+}
+[data-theme="warm"] .hero-sub { color: #1A1A1A; }
+.hero-ctas {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.hero .cta-button {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+[data-theme="warm"] .hero-ctas .text-link { color: #1A1A1A; }
+[data-theme="dark"] .hero-ctas .text-link { color: #fff; }
+.text-link {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 4px;
+  border-bottom: 1px solid currentColor;
+}
+.text-link .arrow { transition: transform .25s ease; }
+.text-link:hover .arrow { transform: translateX(4px); }
+
+/* ----- CAPABILITY STATEMENT ----- */
+.capability-statement {
+  padding: 140px 0 120px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.capability-statement .eyebrow { margin-bottom: 32px; }
+.capability-statement h2 {
+  font-size: clamp(2rem, 4.5vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  max-width: 20ch;
+}
+[data-theme="dark"] .capability-statement h2 { font-weight: 500; }
+.capability-statement h2 strong {
+  font-style: italic;
+  font-weight: 400;
+}
+.capability-statement h2 a {
+  border-bottom: 1px solid var(--ink);
+  transition: color .2s ease;
+}
+.capability-statement h2 a:hover {
+  color: var(--accent-soft);
+}
+
+/* ----- LOGO WALL ----- */
+.logo-wall {
+  padding: 80px 0;
+  border-bottom: 1px solid var(--line);
+}
+.logo-wall .lead {
+  max-width: 64ch;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 16px 0 56px;
+}
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+@media (max-width: 768px) {
+  .logo-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.logo-cell {
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--ink-soft);
+  background: var(--bg);
+  transition: background .2s ease, color .2s ease;
+}
+[data-theme="dark"] .logo-cell { font-weight: 600; }
+.logo-cell:hover {
+  background: var(--bg-elevated);
+  color: var(--ink);
+}
+.logo-cell.muted {
+  color: var(--ink-muted);
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 400;
+}
+.tm-disclaimer {
+  font-size: 10px;
+  color: var(--ink-muted);
+  margin-top: 32px;
+  max-width: 70ch;
+  line-height: 1.5;
+}
+
+/* ----- 5-TILE GRID ----- */
+.what-we-build {
+  padding: 120px 0;
+  border-bottom: 1px solid var(--line);
+}
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 64px;
+}
+.section-head h2 {
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  letter-spacing: -0.03em;
+  font-weight: 400;
+}
+[data-theme="dark"] .section-head h2 { font-weight: 500; }
+.section-head .text-link { padding-bottom: 10px; }
+.tile-grid-5 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: auto auto;
+  gap: 24px;
+}
+@media (max-width: 1024px) {
+  .tile-grid-5 { grid-template-columns: repeat(2, 1fr); }
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--bg-elevated);
+  padding: 0;
+  transition: transform .35s ease;
+  text-decoration: none;
+  color: var(--ink);
+}
+.tile:hover { transform: translateY(-4px); }
+.tile-photo {
+  aspect-ratio: 4/5;
+  position: relative;
+  overflow: hidden;
+}
+.photo-block {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--photo-bg);
+  background-image:
+    repeating-linear-gradient(135deg, transparent 0 10px, rgba(0,0,0,.03) 10px 12px);
+}
+[data-theme="dark"] .photo-block {
+  background-image:
+    repeating-linear-gradient(135deg, transparent 0 10px, rgba(255,255,255,.02) 10px 12px);
+}
+.photo-block.alt { background: var(--photo-bg-2); }
+.photo-block.alt-2 { background: var(--photo-bg-3); }
+.photo-caption {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.7;
+  background: var(--bg);
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  max-width: 80%;
+  text-align: center;
+  line-height: 1.4;
+}
+.tile-body {
+  padding: 0 24px 28px;
+}
+.tile-grid-5 .tile:nth-child(1),
+.tile-grid-5 .tile:nth-child(2),
+.tile-grid-5 .tile:nth-child(3) {
+  grid-column: span 2;
+}
+.tile-grid-5 .tile:nth-child(4),
+.tile-grid-5 .tile:nth-child(5) {
+  grid-column: span 3;
+}
+@media (max-width: 1024px) {
+  .tile-grid-5 .tile { grid-column: span 1 !important; }
+}
+.tile h3 {
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  margin-bottom: 12px;
+  line-height: 1.1;
+}
+[data-theme="dark"] .tile h3 { font-weight: 500; }
+.tile p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin-bottom: 16px;
+}
+.tile-link {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tile-link .arrow { transition: transform .25s ease; }
+.tile:hover .tile-link .arrow { transform: translateX(4px); }
+
+/* ----- FEATURED WORK ----- */
+.featured-work { padding: 120px 0; border-bottom: 1px solid var(--line); }
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+.work-item {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.work-item.size-lg { grid-column: span 8; }
+.work-item.size-md { grid-column: span 4; }
+.work-item.size-sm { grid-column: span 4; }
+.work-item.size-tall { grid-column: span 6; }
+@media (max-width: 900px) {
+  .work-item { grid-column: span 12 !important; }
+}
+.work-photo {
+  aspect-ratio: 16/10;
+  position: relative;
+  overflow: hidden;
+}
+.work-item.size-tall .work-photo,
+.work-item.size-md .work-photo {
+  aspect-ratio: 4/5;
+}
+.work-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+.work-meta h4 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  font-family: var(--font-body);
+}
+.work-meta p {
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+.work-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+/* ----- WHY ----- */
+.why-section { padding: 120px 0; background: var(--bg-elevated); border-bottom: 1px solid var(--line); }
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+}
+@media (max-width: 900px) { .why-grid { grid-template-columns: 1fr; } }
+.why-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.why-photo {
+  aspect-ratio: 5/4;
+  position: relative;
+}
+.why-col h3 {
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+[data-theme="dark"] .why-col h3 { font-weight: 500; }
+.why-col p {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+/* ----- SHOP BRIDGE ----- */
+.shop-bridge { padding: 120px 0; border-bottom: 1px solid var(--line); }
+.bridge-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .bridge-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+.bridge-photo { aspect-ratio: 5/4; position: relative; }
+.bridge-content h2 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-bottom: 20px;
+}
+[data-theme="dark"] .bridge-content h2 { font-weight: 500; }
+.bridge-content p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-bottom: 28px;
+  max-width: 42ch;
+}
+.bridge-content .ctas {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ----- DECK CTA ----- */
+.deck-cta {
+  padding: 120px 0;
+  background: var(--ink);
+  color: var(--bg);
+  text-align: center;
+}
+.deck-cta .eyebrow { color: var(--ink-muted); margin-bottom: 24px; }
+[data-theme="warm"] .deck-cta .eyebrow { color: rgba(245, 241, 234, 0.5); }
+.deck-cta h2 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  color: var(--bg);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+  margin: 0 auto 24px;
+  line-height: 1.05;
+}
+[data-theme="dark"] .deck-cta h2 { font-weight: 500; }
+.deck-cta p {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--bg);
+  opacity: 0.8;
+  max-width: 52ch;
+  margin: 0 auto 48px;
+}
+.deck-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: left;
+}
+.deck-form label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 241, 234, 0.6);
+  margin-bottom: 8px;
+}
+[data-theme="warm"] .deck-form label { color: rgba(245, 241, 234, 0.5); }
+.deck-form input,
+.deck-form select {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(245, 241, 234, 0.3);
+  padding: 8px 0;
+  color: var(--bg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  border-radius: 0;
+}
+.deck-form input:focus,
+.deck-form select:focus {
+  outline: none;
+  border-bottom-color: var(--bg);
+}
+.deck-form select option { background: var(--ink); color: var(--bg); }
+.deck-form .full { grid-column: span 2; }
+.deck-cta .submit-row {
+  margin-top: 32px;
+  text-align: center;
+}
+.deck-cta button[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: all .2s ease;
+  border: 1px solid var(--bg);
+}
+.deck-cta button[type="submit"]:hover {
+  background: transparent;
+  color: var(--bg);
+}
+
+/* ----- REVIEWS + IG ----- */
+.reviews { padding: 120px 0; border-bottom: 1px solid var(--line); }
+.reviews-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+}
+@media (max-width: 900px) { .reviews-grid { grid-template-columns: 1fr; } }
+.review-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.review-card {
+  background: var(--bg-elevated);
+  padding: 32px;
+  border-left: 2px solid var(--accent-soft);
+}
+.review-stars {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: var(--accent-soft);
+  margin-bottom: 12px;
+}
+.review-card p {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.review-author {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--ink-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ig-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.ig-tile { aspect-ratio: 1; }
+
+/* ----- FINAL CTA ----- */
+.final-cta { padding: 140px 0; text-align: center; border-bottom: 1px solid var(--line); }
+.final-cta h2 {
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  margin-bottom: 40px;
+}
+[data-theme="dark"] .final-cta h2 { font-weight: 500; }
+.final-cta .reply-line {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-top: 24px;
+}
+
+/* ----- FOOTER ----- */
+footer.site-footer {
+  background: var(--bg-elevated);
+  padding: 80px 0 32px;
+  border-top: 1px solid var(--line);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 80px;
+}
+@media (max-width: 900px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+.footer-brand-block .brand { font-size: 24px; }
+.footer-brand-block p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin-top: 16px;
+  max-width: 36ch;
+}
+.footer-brand-block .contact-info {
+  margin-top: 24px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.footer-col h5 {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+.footer-col ul li {
+  margin-bottom: 10px;
+}
+.footer-col ul li a {
+  font-size: 14px;
+  color: var(--ink-soft);
+  transition: color .2s ease;
+}
+.footer-col ul li a:hover { color: var(--ink); }
+.footer-bottom {
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-bottom p {
+  font-size: 11px;
+  color: var(--ink-muted);
+  max-width: 60ch;
+  line-height: 1.5;
+}
+.footer-social {
+  display: flex;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.footer-social a { color: var(--ink-soft); }
+.footer-social a:hover { color: var(--ink); }
+
+/* ----- VERTICAL PAGE STYLES ----- */
+.page-hero {
+  min-height: 80vh;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+}
+.page-hero .hero-bg {
+  background:
+    linear-gradient(180deg, transparent 0%, var(--hero-overlay) 100%),
+    repeating-linear-gradient(135deg, var(--photo-bg-2), var(--photo-bg-2) 2px, var(--photo-bg) 2px, var(--photo-bg) 22px);
+}
+.page-hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 0 32px 80px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  color: #fff;
+}
+[data-theme="warm"] .page-hero-content { color: #1A1A1A; }
+.page-hero .eyebrow {
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 20px;
+}
+[data-theme="warm"] .page-hero .eyebrow { color: rgba(0,0,0,0.6); }
+.page-hero h1 {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  line-height: 0.95;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  max-width: 18ch;
+  margin-bottom: 32px;
+}
+[data-theme="dark"] .page-hero h1 { font-weight: 500; }
+.page-hero .lead {
+  font-size: 19px;
+  line-height: 1.5;
+  max-width: 60ch;
+  color: inherit;
+}
+
+/* ----- INTRO BLOCK ----- */
+.intro-block { padding: 120px 0 80px; }
+.intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 64px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .intro-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+.intro-block h2 {
+  font-size: clamp(1.75rem, 3.5vw, 3rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+[data-theme="dark"] .intro-block h2 { font-weight: 500; }
+.intro-block p {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin-bottom: 20px;
+}
+.intro-block p:last-child { margin-bottom: 0; }
+
+/* ----- AUDIENCE CALLOUTS ----- */
+.audience-row {
+  padding: 60px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+@media (max-width: 900px) { .audience-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .audience-grid { grid-template-columns: 1fr; } }
+.audience-cell h4 {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.audience-cell p {
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+/* ----- PRODUCT CATALOG GRID ----- */
+.catalog-section { padding: 120px 0; border-bottom: 1px solid var(--line); }
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px 32px;
+}
+@media (max-width: 900px) { .catalog-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .catalog-grid { grid-template-columns: 1fr; } }
+.catalog-item { display: flex; flex-direction: column; gap: 16px; }
+.catalog-photo { aspect-ratio: 4/5; position: relative; }
+.catalog-item h4 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+[data-theme="dark"] .catalog-item h4 { font-weight: 500; }
+.catalog-spec {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+.catalog-desc {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin-top: 8px;
+}
+.catalog-item .tile-link {
+  margin-top: 8px;
+  align-self: flex-start;
+}
+
+/* ----- PROCESS STEPS ----- */
+.process-section { padding: 120px 0; background: var(--bg-elevated); border-bottom: 1px solid var(--line); }
+.process-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+}
+@media (max-width: 900px) { .process-steps { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .process-steps { grid-template-columns: 1fr; } }
+.process-step {
+  border-top: 1px solid var(--ink);
+  padding-top: 24px;
+}
+.process-step .num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+  margin-bottom: 12px;
+}
+.process-step h4 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+  line-height: 1.1;
+}
+[data-theme="dark"] .process-step h4 { font-weight: 500; }
+.process-step p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+/* ----- ABOUT PAGE ----- */
+.about-hero {
+  padding: 160px 0 80px;
+}
+.about-hero h1 {
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  max-width: 18ch;
+  margin-bottom: 0;
+}
+[data-theme="dark"] .about-hero h1 { font-weight: 500; }
+.about-body {
+  padding: 60px 0 120px;
+  border-bottom: 1px solid var(--line);
+}
+.about-body-grid {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 80px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .about-body-grid { grid-template-columns: 1fr; gap: 40px; }
+}
+.about-photo-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 100px;
+}
+.about-photo { aspect-ratio: 4/5; position: relative; }
+.about-photo.wide { aspect-ratio: 4/3; }
+.about-prose p {
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin-bottom: 24px;
+}
+.about-prose p strong {
+  font-weight: 500;
+}
+.about-prose p:first-child::first-letter {
+  font-family: var(--font-display);
+  font-size: 5em;
+  font-weight: 400;
+  float: left;
+  line-height: 0.85;
+  padding: 6px 12px 0 0;
+  font-style: italic;
+}
+.about-quote {
+  border-left: 2px solid var(--accent-soft);
+  padding-left: 24px;
+  margin: 40px 0;
+}
+.about-quote p {
+  font-family: var(--font-display);
+  font-size: 24px !important;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.3 !important;
+}
+.about-cta-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+/* ----- STATS STRIP ----- */
+.stats-strip {
+  padding: 80px 0;
+  border-bottom: 1px solid var(--line);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+@media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+.stat-cell .num {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+  display: block;
+  margin-bottom: 12px;
+}
+[data-theme="dark"] .stat-cell .num { font-weight: 500; }
+.stat-cell .label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+
+/* ----- CONTACT PAGE ----- */
+.contact-page { padding: 160px 0 120px; min-height: 100vh; }
+.contact-grid {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 80px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+}
+.contact-intro h1 {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  margin-bottom: 32px;
+}
+[data-theme="dark"] .contact-intro h1 { font-weight: 500; }
+.contact-intro p {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin-bottom: 32px;
+  max-width: 36ch;
+}
+.contact-detail-list {
+  margin-top: 40px;
+  border-top: 1px solid var(--line);
+}
+.contact-detail-list li {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+.contact-detail-list li .label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.contact-form { display: flex; flex-direction: column; gap: 24px; }
+.field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  border-radius: 0;
+  transition: border-color .2s ease;
+}
+.field textarea { resize: vertical; min-height: 120px; }
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-bottom-color: var(--ink);
+}
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+.contact-form button[type="submit"] {
+  align-self: flex-start;
+  margin-top: 16px;
+  padding: 14px 28px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all .2s ease;
+}
+.contact-form button[type="submit"]:hover {
+  background: transparent;
+  color: var(--ink);
+}
+
+/* ----- MOBILE MENU ----- */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 200;
+  padding: 80px 32px 32px;
+  display: none;
+  flex-direction: column;
+  gap: 24px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.mobile-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+}
+
+/* ----- UTILITY ----- */
+.scroll-indicator {
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 3;
+}
+[data-theme="warm"] .hero .scroll-indicator { color: rgba(0,0,0,0.5); }
+[data-theme="dark"] .hero .scroll-indicator { color: rgba(255,255,255,0.5); }
+
+/* dark theme typography push */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2 {
+  font-weight: 500;
+}
+[data-theme="dark"] .hero h1,
+[data-theme="dark"] .page-hero h1,
+[data-theme="dark"] .final-cta h2 {
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+}
+
+/* page transitions */
+.page {
+  animation: none;
+}
+.page.active {
+  animation: fadeIn .35s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* theme legend banner */
+.theme-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 99;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.2);
+  max-width: calc(100vw - 40px);
+}
+.theme-banner .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+}
+@media (max-width: 600px) {
+  .theme-banner { font-size: 9px; padding: 8px 12px; }
+}
+
+/* skip-to-section selector pinned in top bar */
+.page-select {
+  position: fixed;
+  top: 80px;
+  right: 32px;
+  z-index: 99;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  cursor: pointer;
+  display: none;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER (persistent across all pages)
+     ============================================================ -->
+<header class="site-header" id="siteHeader">
+  <div class="container header-row">
+    <a href="#home" class="brand" data-nav="home">
+      South Shore Woodworking
+      <small>Custom Fabrication — Long Island, NY</small>
+    </a>
+    <nav class="nav">
+      <div class="nav-links" style="display:flex; align-items:center; gap:28px;">
+        <a href="#work" data-nav="work">Work</a>
+        <div class="has-sub">
+          <span>What we build</span>
+          <div class="subnav">
+            <a href="#brand-activations" data-nav="brand-activations">Brand Activations</a>
+            <a href="#popups" data-nav="popups">Pop-Ups & Retail Display</a>
+            <a href="#stages" data-nav="stages">Stages & DJ Booths</a>
+            <a href="#mobile-bars" data-nav="mobile-bars">Mobile Bars & Catering</a>
+            <a href="#decor" data-nav="decor">Custom Décor</a>
+          </div>
+        </div>
+        <a href="#about" data-nav="about">Studio</a>
+        <a href="#work" data-nav="work">Journal</a>
+      </div>
+      <a href="#contact" class="cta-button" data-nav="contact">
+        Start a project <span class="arrow">→</span>
+      </a>
+      <div class="theme-toggle" role="tablist" aria-label="Visual theme">
+        <button data-theme-btn="warm" class="active" title="Warm / Hoffer-faithful palette">Warm</button>
+        <button data-theme-btn="dark" title="Dark / Agency-grade palette">Dark</button>
+      </div>
+      <button class="menu-trigger" aria-label="Menu" id="menuTrigger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" aria-label="Close" id="mobileClose">
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+  </button>
+  <a href="#work" data-nav="work">Work</a>
+  <a href="#brand-activations" data-nav="brand-activations">Brand Activations</a>
+  <a href="#popups" data-nav="popups">Pop-Ups & Retail</a>
+  <a href="#stages" data-nav="stages">Stages & DJ Booths</a>
+  <a href="#mobile-bars" data-nav="mobile-bars">Mobile Bars & Catering</a>
+  <a href="#decor" data-nav="decor">Custom Décor</a>
+  <a href="#about" data-nav="about">Studio</a>
+  <a href="#contact" data-nav="contact">Contact</a>
+</div>
+
+<!-- ============================================================
+     PAGE: HOME
+     ============================================================ -->
+<main>
+<section class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-caption">[ Hero image — full-bleed shot of finished brand activation install / stage / mobile bar at night ]</div>
+    <div class="hero-content">
+      <div class="hero-grid">
+        <div>
+          <h1>South Shore Woodworking</h1>
+        </div>
+        <div class="hero-meta">
+          <p class="hero-sub">A Long Island fabrication shop for brands, agencies, and venues. Custom builds for brand activations, pop-ups, stages, mobile bars, and décor — delivered from our Center Moriches shop.</p>
+          <div class="hero-ctas">
+            <a href="#contact" class="cta-button" data-nav="contact">Start a project <span class="arrow">→</span></a>
+            <a href="#work" class="text-link" data-nav="work">View our work <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">Scroll →</div>
+  </section>
+
+  <!-- CAPABILITY STATEMENT -->
+  <section class="capability-statement">
+    <div class="container">
+      <p class="eyebrow">What we build</p>
+      <h2>We build <a href="#brand-activations" data-nav="brand-activations"><em>brand activations</em></a>, <a href="#popups" data-nav="popups"><em>pop-up retail displays</em></a>, <a href="#stages" data-nav="stages"><em>stages & DJ booths</em></a>, <a href="#mobile-bars" data-nav="mobile-bars"><em>mobile bars</em></a>, and <a href="#decor" data-nav="decor"><em>custom décor</em></a> for the people who put on the show.</h2>
+    </div>
+  </section>
+
+  <!-- LOGO WALL -->
+  <section class="logo-wall">
+    <div class="container">
+      <p class="eyebrow">Selected Clients</p>
+      <p class="lead">Over the last decade, South Shore has built custom work for entertainment, hospitality, agency, and brand partners — including Disney and Borgata. Most of our builds live behind agency confidentiality. The names below represent the caliber of work we deliver.</p>
+      <div class="logo-grid">
+        <div class="logo-cell">DISNEY</div>
+        <div class="logo-cell">BORGATA</div>
+        <div class="logo-cell muted">+ client</div>
+        <div class="logo-cell muted">+ client</div>
+        <div class="logo-cell muted">+ agency</div>
+        <div class="logo-cell muted">+ agency</div>
+        <div class="logo-cell muted">+ brand</div>
+        <div class="logo-cell muted">+ venue</div>
+      </div>
+      <p class="tm-disclaimer">All trademarks and logos are the property of their respective owners and used here for identification purposes only. Display does not imply endorsement, sponsorship, or current commercial relationship.</p>
+    </div>
+  </section>
+
+  <!-- WHAT WE BUILD - 5 TILE GRID -->
+  <section class="what-we-build">
+    <div class="container">
+      <div class="section-head">
+        <h2>What we build.</h2>
+        <a href="#work" class="text-link" data-nav="work">See full portfolio <span class="arrow">→</span></a>
+      </div>
+      <div class="tile-grid-5">
+        <a href="#brand-activations" class="tile" data-nav="brand-activations">
+          <div class="tile-photo">
+            <div class="photo-block">
+              <span class="photo-caption">[ Brand activation install — agency-led pop-up environment ]</span>
+            </div>
+          </div>
+          <div class="tile-body">
+            <h3>Brand Activations</h3>
+            <p>We build brand activations that earn a second look. Engineered for foot traffic, fast install, and brand precision.</p>
+            <span class="tile-link">Brand activation fabrication <span class="arrow">→</span></span>
+          </div>
+        </a>
+        <a href="#popups" class="tile" data-nav="popups">
+          <div class="tile-photo">
+            <div class="photo-block alt">
+              <span class="photo-caption">[ Pop-up retail buildout — modular fixtures, finished display ]</span>
+            </div>
+          </div>
+          <div class="tile-body">
+            <h3>Pop-Ups & Retail</h3>
+            <p>We build pop-ups that ship on a tight calendar. Full retail environments and fixture programs built to brand standards.</p>
+            <span class="tile-link">Pop-up fabrication <span class="arrow">→</span></span>
+          </div>
+        </a>
+        <a href="#stages" class="tile" data-nav="stages">
+          <div class="tile-photo">
+            <div class="photo-block alt-2">
+              <span class="photo-caption">[ Touring DJ booth / stage build — load-out grade construction ]</span>
+            </div>
+          </div>
+          <div class="tile-body">
+            <h3>Stages & DJ Booths</h3>
+            <p>We build stages and DJ booths that hold up to the night. Tour-grade durability with clean cable management and serious visual presence.</p>
+            <span class="tile-link">Stage & DJ fabrication <span class="arrow">→</span></span>
+          </div>
+        </a>
+        <a href="#mobile-bars" class="tile" data-nav="mobile-bars">
+          <div class="tile-photo">
+            <div class="photo-block alt">
+              <span class="photo-caption">[ Custom mobile bar — finished hardwood, brandable panel ]</span>
+            </div>
+          </div>
+          <div class="tile-body">
+            <h3>Mobile Bars & Catering</h3>
+            <p>We build mobile bars worth photographing. Built for high-end events — finished to camera-quality, engineered to roll.</p>
+            <span class="tile-link">Mobile bar fabrication <span class="arrow">→</span></span>
+          </div>
+        </a>
+        <a href="#decor" class="tile" data-nav="decor">
+          <div class="tile-photo">
+            <div class="photo-block">
+              <span class="photo-caption">[ Custom ceremony arch or sculptural décor — finished install ]</span>
+            </div>
+          </div>
+          <div class="tile-body">
+            <h3>Custom Décor</h3>
+            <p>We build custom décor for rooms that matter. The one-offs that finish the room — sculptural arches, branded photo walls, themed environments.</p>
+            <span class="tile-link">Custom décor builds <span class="arrow">→</span></span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED WORK -->
+  <section class="featured-work">
+    <div class="container">
+      <div class="section-head">
+        <h2>Featured work.</h2>
+        <a href="#work" class="text-link" data-nav="work">View all projects <span class="arrow">→</span></a>
+      </div>
+      <div class="work-grid">
+        <div class="work-item size-lg">
+          <div class="work-photo">
+            <div class="photo-block">
+              <span class="photo-caption">[ Featured hero project — agency activation, full venue install ]</span>
+            </div>
+          </div>
+          <div class="work-meta">
+            <div>
+              <h4>Hospitality Activation</h4>
+              <p>Northeast US — 2025</p>
+            </div>
+            <span class="work-tag">Brand Activation</span>
+          </div>
+        </div>
+        <div class="work-item size-md">
+          <div class="work-photo">
+            <div class="photo-block alt">
+              <span class="photo-caption">[ Mobile bar — finished walnut + brass hardware ]</span>
+            </div>
+          </div>
+          <div class="work-meta">
+            <div>
+              <h4>The Moriches Bar</h4>
+              <p>Catalog piece — 2026</p>
+            </div>
+            <span class="work-tag">Mobile Bar</span>
+          </div>
+        </div>
+        <div class="work-item size-sm">
+          <div class="work-photo">
+            <div class="photo-block alt-2">
+              <span class="photo-caption">[ Custom DJ booth — touring build, 4-show road set ]</span>
+            </div>
+          </div>
+          <div class="work-meta">
+            <div>
+              <h4>Touring DJ Booth</h4>
+              <p>Brooklyn → Boston tour — 2026</p>
+            </div>
+            <span class="work-tag">DJ Booth</span>
+          </div>
+        </div>
+        <div class="work-item size-tall">
+          <div class="work-photo">
+            <div class="photo-block alt">
+              <span class="photo-caption">[ Pop-up retail fixture program — modular shelving system ]</span>
+            </div>
+          </div>
+          <div class="work-meta">
+            <div>
+              <h4>Retail Fixture Program</h4>
+              <p>NYC pop-up — 2025</p>
+            </div>
+            <span class="work-tag">Pop-Up & Retail</span>
+          </div>
+        </div>
+        <div class="work-item size-tall">
+          <div class="work-photo">
+            <div class="photo-block">
+              <span class="photo-caption">[ Custom ceremony arch — sculptural wood + greenery framework ]</span>
+            </div>
+          </div>
+          <div class="work-meta">
+            <div>
+              <h4>Ceremony Arch</h4>
+              <p>Hamptons wedding — 2025</p>
+            </div>
+            <span class="work-tag">Custom Décor</span>
+          </div>
+        </div>
+        <div class="work-item size-sm">
+          <div class="work-photo">
+            <div class="photo-block alt-2">
+              <span class="photo-caption">[ Branded photo wall — 3D dimensional logo build ]</span>
+            </div>
+          </div>
+          <div class="work-meta">
+            <div>
+              <h4>Brand Photo Wall</h4>
+              <p>Press event — 2025</p>
+            </div>
+            <span class="work-tag">Brand Activation</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY SOUTH SHORE -->
+  <section class="why-section">
+    <div class="container">
+      <p class="eyebrow" style="margin-bottom:48px;">Why South Shore</p>
+      <div class="why-grid">
+        <div class="why-col">
+          <div class="why-photo">
+            <div class="photo-block">
+              <span class="photo-caption">[ Alex Vieco at the shop — close-up, hands on tool ]</span>
+            </div>
+          </div>
+          <h3>Founder-led.</h3>
+          <p>You'll have Alex's cell. He's in the shop when your piece is cut, finished, and loaded. Every project, no exceptions.</p>
+        </div>
+        <div class="why-col">
+          <div class="why-photo">
+            <div class="photo-block alt">
+              <span class="photo-caption">[ Shop exterior or shop-floor wide angle — Center Moriches, NY ]</span>
+            </div>
+          </div>
+          <h3>Long Island shop, NYC delivery radius.</h3>
+          <p>Our Center Moriches shop is 60 miles from Midtown. Tri-state install crews; nationwide freight when the job calls for it.</p>
+        </div>
+        <div class="why-col">
+          <div class="why-photo">
+            <div class="photo-block alt-2">
+              <span class="photo-caption">[ Finished detail shot — joinery, hardware, painted edge ]</span>
+            </div>
+          </div>
+          <h3>Millwork-grade craft, agency-grade speed.</h3>
+          <p>Most fab shops treat every build like scenic; most carpenters don't speak agency. We sit in between — and we hit the deadline.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOP BRIDGE -->
+  <section class="shop-bridge">
+    <div class="container">
+      <div class="bridge-grid">
+        <div class="bridge-photo">
+          <div class="photo-block">
+            <span class="photo-caption">[ Etsy products styled together — cannoli box, charcuterie boards, 3D layer wall ]</span>
+          </div>
+        </div>
+        <div class="bridge-content">
+          <p class="eyebrow" style="margin-bottom:24px;">Shop</p>
+          <h2>Custom pieces for the home, on our Etsy.</h2>
+          <p>Cannoli boxes, charcuterie boards, 3D layer walls, marquee letters, and other small-batch pieces from the South Shore shop. Ships nationwide via our Etsy storefront.</p>
+          <div class="ctas">
+            <a href="https://www.etsy.com/shop/SouthShoreWoodwork" target="_blank" rel="noopener" class="cta-button">Browse the Etsy shop <span class="arrow">→</span></a>
+            <a href="#work" class="text-link">Featured pieces <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DECK CTA -->
+  <section class="deck-cta">
+    <div class="container">
+      <p class="eyebrow">Capabilities deck</p>
+      <h2>Take our shop in your back pocket.</h2>
+      <p>Our 2026 capabilities deck — what we build, what's on the shop floor, who we've built for, and how to brief us — in a 10-page PDF.</p>
+      <form class="deck-form" onsubmit="event.preventDefault(); alert('Mockup: PDF would download / be emailed here.');">
+        <div class="field">
+          <label for="dn">Name</label>
+          <input type="text" id="dn" required>
+        </div>
+        <div class="field">
+          <label for="de">Work email</label>
+          <input type="email" id="de" required>
+        </div>
+        <div class="field">
+          <label for="dc">Company</label>
+          <input type="text" id="dc">
+        </div>
+        <div class="field">
+          <label for="dp">Project type</label>
+          <select id="dp">
+            <option>Brand activation</option>
+            <option>Pop-up / retail</option>
+            <option>Stage / DJ booth</option>
+            <option>Mobile bar / catering piece</option>
+            <option>Custom décor</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="submit-row full">
+          <button type="submit">Download the deck <span class="arrow">→</span></button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- REVIEWS + IG -->
+  <section class="reviews">
+    <div class="container">
+      <div class="section-head">
+        <h2>What clients say. What's on the bench.</h2>
+      </div>
+      <div class="reviews-grid">
+        <div class="review-cards">
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <p>"Exactly what I was looking for my business — beautifully built, on time, and the crew handled install like pros. Will absolutely work with Alex again."</p>
+            <div class="review-author">— Agency PM, Event Production · Brooklyn, NY</div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <p>"Alex took our brief and came back with a quote inside 24 hours. The build came in clean, the install crew loaded in on schedule, and the piece photographed beautifully."</p>
+            <div class="review-author">— Brand Marketing Lead · NYC</div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <p>"We sent him a deck on a Monday and the piece was on the truck three weeks later. Genuinely the best shop we've worked with on the East End."</p>
+            <div class="review-author">— Experiential Producer · Long Island, NY</div>
+          </div>
+        </div>
+        <div>
+          <p class="eyebrow" style="margin-bottom:20px;">Instagram — @southshore_woodworking</p>
+          <div class="ig-grid">
+            <div class="ig-tile"><div class="photo-block"><span class="photo-caption">[ IG ]</span></div></div>
+            <div class="ig-tile"><div class="photo-block alt"><span class="photo-caption">[ IG ]</span></div></div>
+            <div class="ig-tile"><div class="photo-block alt-2"><span class="photo-caption">[ IG ]</span></div></div>
+            <div class="ig-tile"><div class="photo-block alt"><span class="photo-caption">[ IG ]</span></div></div>
+            <div class="ig-tile"><div class="photo-block"><span class="photo-caption">[ IG ]</span></div></div>
+            <div class="ig-tile"><div class="photo-block alt-2"><span class="photo-caption">[ IG ]</span></div></div>
+            <div class="ig-tile"><div class="photo-block alt-2"><span class="photo-caption">[ IG ]</span></div></div>
+            <div class="ig-tile"><div class="photo-block"><span class="photo-caption">[ IG ]</span></div></div>
+            <div class="ig-tile"><div class="photo-block alt"><span class="photo-caption">[ IG ]</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <div class="container">
+      <h2>Have a build in mind?</h2>
+      <a href="#contact" class="cta-button" data-nav="contact">Start a project <span class="arrow">→</span></a>
+      <p class="reply-line">alex@southshorewoodworking.com · Replies within one business day</p>
+    </div>
+  </section>
+
+</section>
+
+<!-- ============================================================
+     PAGE: BRAND ACTIVATIONS
+     ============================================================ -->
+<section class="page" id="page-brand-activations">
+
+  <section class="page-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-caption">[ Brand activation hero — agency-led pop-up environment, fully installed ]</div>
+    <div class="page-hero-content">
+      <p class="eyebrow">Brand Activations</p>
+      <h1>We build brand activations that earn a second look.</h1>
+      <p class="lead">Custom fabrication for the experiential moments brands stage — engineered for foot traffic, fast install, and brand precision. Built in our Center Moriches shop, delivered and installed across the NYC tri-state.</p>
+    </div>
+  </section>
+
+  <section class="intro-block">
+    <div class="container">
+      <div class="intro-grid">
+        <h2>The build that pulls people into the experience.</h2>
+        <div>
+          <p>South Shore Woodworking designs and fabricates the physical pieces that make activations work. Photo moments, dimensional logos, branded archways, interactive walls, oversized props — every piece engineered for the realities of a live activation: weight, transport, install windows, brand standards, weather.</p>
+          <p>We work directly with brand activation agencies, experiential marketing firms, in-house corporate marketing teams, and the artists and creative directors who hire us direct. Projects typically run $20,000 to $40,000+, with timelines from concept to install ranging from 3 to 8 weeks.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="audience-row">
+    <div class="container">
+      <div class="audience-grid">
+        <div class="audience-cell">
+          <h4>For Agencies</h4>
+          <p>One point of contact from brief through install. Production-ready CAD, mid-build photo updates, no scope-creep games.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>For Brands</h4>
+          <p>We work direct or alongside your agency. Brand standards held, finishes photo-grade, install crews trained.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>For Artists & Producers</h4>
+          <p>Stage builds, branded environments, touring sets. Built to survive the road and load in fast.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>For Venues</h4>
+          <p>Activation hosts and creative venues — modular installs, union-friendly load-in, COI on request.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="catalog-section">
+    <div class="container">
+      <div class="section-head">
+        <h2>What we make in this category.</h2>
+      </div>
+      <div class="catalog-grid">
+        <div class="catalog-item">
+          <div class="catalog-photo">
+            <div class="photo-block">
+              <span class="photo-caption">[ Dimensional logo build — large-scale brand letterforms ]</span>
+            </div>
+          </div>
+          <h4>Dimensional Logos & Letterforms</h4>
+          <p class="catalog-spec">FREESTANDING · WALL-MOUNT · UP TO 10 FT</p>
+          <p class="catalog-desc">Full-color, hand-finished brand identity at scale. Photo-grade paint, sharp edges, transport-safe construction.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo">
+            <div class="photo-block alt">
+              <span class="photo-caption">[ Branded photo wall — step-and-repeat with dimensional elements ]</span>
+            </div>
+          </div>
+          <h4>Branded Photo Moments</h4>
+          <p class="catalog-spec">PHOTO WALL · 3D BACKDROP · ARCH</p>
+          <p class="catalog-desc">The piece your activation lives or dies by. Sized for press lines, built for the camera, branded to spec.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo">
+            <div class="photo-block alt-2">
+              <span class="photo-caption">[ Interactive wall or branded environment — full-room install ]</span>
+            </div>
+          </div>
+          <h4>Branded Environments</h4>
+          <p class="catalog-spec">FULL-ROOM · MODULAR · BRAND-PERFECT</p>
+          <p class="catalog-desc">Complete environments built to drop into hotels, venues, and pop-up footprints. Modular for tour, finished for hero shots.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo">
+            <div class="photo-block">
+              <span class="photo-caption">[ Custom interactive prop — branded oversized object ]</span>
+            </div>
+          </div>
+          <h4>Oversized Props & Interactives</h4>
+          <p class="catalog-spec">CUSTOM · ONE-OFF · DURABLE</p>
+          <p class="catalog-desc">The "we need a 6-ft cocktail glass by Friday" call. We build the one-offs that anchor the campaign.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo">
+            <div class="photo-block alt">
+              <span class="photo-caption">[ Modular structural build — branded entryway or archway ]</span>
+            </div>
+          </div>
+          <h4>Entryways & Archways</h4>
+          <p class="catalog-spec">FREESTANDING · BRANDED · LOAD-IN READY</p>
+          <p class="catalog-desc">The first thing guests walk through. Built to brand standard, engineered for the venue's specs.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo">
+            <div class="photo-block alt-2">
+              <span class="photo-caption">[ Custom product fixture or activation hardware ]</span>
+            </div>
+          </div>
+          <h4>Custom Product Fixtures</h4>
+          <p class="catalog-spec">SHELVING · DISPLAY · BRAND DRESSING</p>
+          <p class="catalog-desc">For activations doubling as retail moments. Display-grade fixtures that ship flat and assemble fast.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="process-section">
+    <div class="container">
+      <div class="section-head">
+        <h2>How we work.</h2>
+        <p style="font-size:15px; color:var(--ink-soft); max-width:36ch;">From brief to truck. Six steps. One point of contact — Alex.</p>
+      </div>
+      <div class="process-steps">
+        <div class="process-step">
+          <p class="num">01 / Brief</p>
+          <h4>Send us anything.</h4>
+          <p>Deck, sketch, paragraph, PO. We respond inside one business day with feasibility, ballpark, and the questions we need answered.</p>
+        </div>
+        <div class="process-step">
+          <p class="num">02 / Design</p>
+          <h4>Build drawings & specs.</h4>
+          <p>Material specs, hardware schedule, structural detail, finish schedule. We work from your renderings or our own.</p>
+        </div>
+        <div class="process-step">
+          <p class="num">03 / Approve</p>
+          <h4>Sign-off & schedule.</h4>
+          <p>Sign-off on drawings, finishes, timeline. Deposit triggers material order and shop slot.</p>
+        </div>
+        <div class="process-step">
+          <p class="num">04 / Build</p>
+          <h4>Fabricate, finish, QC.</h4>
+          <p>Daily photos on request. We don't ship anything we wouldn't put our name on. Full mock-up before the truck loads.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="container">
+      <h2>Got a brief?</h2>
+      <a href="#contact" class="cta-button" data-nav="contact">Brief us on your activation <span class="arrow">→</span></a>
+      <p class="reply-line">Replies within one business day · NDA-friendly</p>
+    </div>
+  </section>
+
+</section>
+
+<!-- ============================================================
+     PAGE: POP-UPS & RETAIL DISPLAY
+     ============================================================ -->
+<section class="page" id="page-popups">
+
+  <section class="page-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-caption">[ Pop-up shop hero — full retail buildout, finished install with product staged ]</div>
+    <div class="page-hero-content">
+      <p class="eyebrow">Pop-Ups & Retail Display</p>
+      <h1>We build pop-ups that ship on a tight calendar.</h1>
+      <p class="lead">Full retail environments and fixture programs built to brand standards, transport flat, and assemble fast — for direct-to-consumer pop-ups, brand activations, and short-run retail moments across the NYC tri-state.</p>
+    </div>
+  </section>
+
+  <section class="intro-block">
+    <div class="container">
+      <div class="intro-grid">
+        <h2>Retail-grade. Activation-fast.</h2>
+        <div>
+          <p>Pop-up retail is built different. The fixtures have to look permanent, but the build has to assemble in 48 hours and strike inside one. We design and fabricate complete pop-up programs — fixtures, cash-wraps, signage walls, product plinths, cladding, lighting integration — engineered for the install window and the brand standard.</p>
+          <p>We work with brand teams running their own pop-ups, experiential agencies producing brand-led retail, and DTC brands testing IRL. Most projects ship as modular kits with documented assembly so your install crew (or ours) can put it up clean.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="audience-row">
+    <div class="container">
+      <div class="audience-grid">
+        <div class="audience-cell">
+          <h4>Direct-to-consumer brands</h4>
+          <p>Test IRL fast. Photo-ready fixtures, branded to spec, ships flat.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Experiential agencies</h4>
+          <p>Production-ready CAD, brand-pack compliance, on-time on-budget.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Retail brand teams</h4>
+          <p>Flagship support, mall + airport pop-ups, modular programs.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Activation producers</h4>
+          <p>Multi-city tours, repeatable kit-of-parts, road-safe builds.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="catalog-section">
+    <div class="container">
+      <div class="section-head"><h2>What we make in this category.</h2></div>
+      <div class="catalog-grid">
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block"><span class="photo-caption">[ Modular shop fit-out — full retail environment ]</span></div></div>
+          <h4>Modular Shop Fit-Outs</h4>
+          <p class="catalog-spec">COMPLETE BUILDOUT · 48-HR INSTALL · TOUR-READY</p>
+          <p class="catalog-desc">Full retail environments engineered to assemble fast and strike clean. Photo-grade finishes, tour-safe construction.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt"><span class="photo-caption">[ Custom retail shelving — wall-mounted product display ]</span></div></div>
+          <h4>Custom Shelving Systems</h4>
+          <p class="catalog-spec">WALL · FREESTANDING · BRANDED</p>
+          <p class="catalog-desc">Shelving that holds the product and the brand. Hardwood, laminate, painted MDF — finished for camera.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt-2"><span class="photo-caption">[ Product plinth — finished display pedestal ]</span></div></div>
+          <h4>Product Plinths & Pedestals</h4>
+          <p class="catalog-spec">CUSTOM · MULTIPLE FINISHES · STACKABLE</p>
+          <p class="catalog-desc">The fixture every photo lives on. Built to brand-pack finishes, leveled for height variance, transport-safe.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block"><span class="photo-caption">[ Cash-wrap counter — branded retail point-of-sale ]</span></div></div>
+          <h4>Cash-Wraps & POS</h4>
+          <p class="catalog-spec">FULL-HEIGHT · WIRED · BRAND-FACED</p>
+          <p class="catalog-desc">POS counters with integrated cable management and branded face panels. Built to support iPad/Square hardware out of the box.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt"><span class="photo-caption">[ Signage wall — large format brand identity ]</span></div></div>
+          <h4>Signage Walls & Cladding</h4>
+          <p class="catalog-spec">FULL-WALL · DIMENSIONAL · LIGHTING-READY</p>
+          <p class="catalog-desc">Brand identity at floor-to-ceiling scale. Dimensional letterforms, large-format graphic mounts, integrated lighting channels.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt-2"><span class="photo-caption">[ Custom product fixture — apparel rack or specialty display ]</span></div></div>
+          <h4>Specialty Product Fixtures</h4>
+          <p class="catalog-spec">APPAREL · ACCESSORIES · ONE-OFFS</p>
+          <p class="catalog-desc">The fixture nobody else makes. Apparel rails, jewelry cases, footwear walls — built to your product, not from a catalog.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="container">
+      <h2>Pop-up coming up?</h2>
+      <a href="#contact" class="cta-button" data-nav="contact">Brief us on your build <span class="arrow">→</span></a>
+      <p class="reply-line">Replies within one business day · 3–8 week typical lead time</p>
+    </div>
+  </section>
+
+</section>
+
+<!-- ============================================================
+     PAGE: STAGES & DJ BOOTHS
+     ============================================================ -->
+<section class="page" id="page-stages">
+
+  <section class="page-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-caption">[ Stage / DJ booth hero — performance-ready build at night with stage lighting ]</div>
+    <div class="page-hero-content">
+      <p class="eyebrow">Stages & DJ Booths</p>
+      <h1>We build stages and DJ booths that hold up to the night.</h1>
+      <p class="lead">Performance-ready stages and DJ booths designed for tour-grade durability, clean cable management, and serious visual presence — for venues, touring artists, and one-off branded productions.</p>
+    </div>
+  </section>
+
+  <section class="intro-block">
+    <div class="container">
+      <div class="intro-grid">
+        <h2>Built to perform. Built to travel.</h2>
+        <div>
+          <p>DJ booths and stage builds are a specific kind of fabrication problem. They have to look perfect for the photo, survive the night for the crowd, break down for the truck, and hold up across the tour. We build for all four — modular construction, transport-safe finishes, integrated cable pass-throughs, riser-ready bases.</p>
+          <p>We work with touring artists, brand-led music activations, venues commissioning permanent or semi-permanent installations, and event producers running multi-show tours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="audience-row">
+    <div class="container">
+      <div class="audience-grid">
+        <div class="audience-cell">
+          <h4>Touring artists & DJs</h4>
+          <p>Multi-city sets, modular builds, photo-grade finishes, road-safe construction.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Brands sponsoring music</h4>
+          <p>Branded DJ facades, stage skirts, sponsor activations integrated into the build.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Venues</h4>
+          <p>Permanent installs, semi-permanent club builds, riser systems and B-stages.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Producers & promoters</h4>
+          <p>One-off festival stages, branded set pieces, full production builds.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="catalog-section">
+    <div class="container">
+      <div class="section-head"><h2>What we make in this category.</h2></div>
+      <div class="catalog-grid">
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block"><span class="photo-caption">[ Custom DJ booth — front-facing branded build ]</span></div></div>
+          <h4>Custom DJ Booth Facades</h4>
+          <p class="catalog-spec">BRANDED · MODULAR · LED-READY</p>
+          <p class="catalog-desc">The face of the set. Photo-grade finishes, branded panels, integrated lighting channels. Modular for tour.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt"><span class="photo-caption">[ Riser system — stacked stage platform with skirt ]</span></div></div>
+          <h4>Riser & Platform Systems</h4>
+          <p class="catalog-spec">STACKABLE · TOUR-SAFE · WEIGHT-RATED</p>
+          <p class="catalog-desc">Modular riser systems built to spec. Weight-rated decks, locking edges, integrated stage skirts, skirt mounts.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt-2"><span class="photo-caption">[ LED-ready stage skirt — dimensional facade with lighting integration ]</span></div></div>
+          <h4>LED-Ready Stage Skirts</h4>
+          <p class="catalog-spec">FULL-PERIMETER · LIGHTING-READY · BRANDED</p>
+          <p class="catalog-desc">Dimensional stage skirts engineered for LED integration. Built to your lighting designer's specs.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block"><span class="photo-caption">[ Modular B-stage — secondary performance platform ]</span></div></div>
+          <h4>B-Stages & Secondary Platforms</h4>
+          <p class="catalog-spec">MODULAR · IN-VENUE · QUICK-INSTALL</p>
+          <p class="catalog-desc">Secondary performance platforms for in-venue activations. Quick-install, no permanent damage to venue floor.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt"><span class="photo-caption">[ DJ booth back panel — wired and lit ]</span></div></div>
+          <h4>Touring DJ Setups</h4>
+          <p class="catalog-spec">FLIGHT-CASED · ROAD-READY · ASSEMBLE-FAST</p>
+          <p class="catalog-desc">Full DJ setups built to travel. Flight-cased components, documented assembly, designed for tour-tech load-in.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt-2"><span class="photo-caption">[ Branded stage backdrop — full-height wall behind performance ]</span></div></div>
+          <h4>Stage Backdrops & Walls</h4>
+          <p class="catalog-spec">FULL-HEIGHT · BRANDED · LIGHTING-READY</p>
+          <p class="catalog-desc">Backing walls behind the stage. Branded, dimensional, integrated for stage lighting and projection.</p>
+          <span class="tile-link">Brief us on a build <span class="arrow">→</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="container">
+      <h2>Show coming up?</h2>
+      <a href="#contact" class="cta-button" data-nav="contact">Brief us on the build <span class="arrow">→</span></a>
+      <p class="reply-line">Replies within one business day · Tour-ready construction</p>
+    </div>
+  </section>
+
+</section>
+
+<!-- ============================================================
+     PAGE: MOBILE BARS & CATERING
+     ============================================================ -->
+<section class="page" id="page-mobile-bars">
+
+  <section class="page-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-caption">[ Mobile bar hero — fully styled mobile bar in event setting with bartender ]</div>
+    <div class="page-hero-content">
+      <p class="eyebrow">Mobile Bars & Catering Pieces</p>
+      <h1>We build mobile bars worth photographing.</h1>
+      <p class="lead">Custom bars, back-bars, charcuterie tables, champagne walls, and serving stations for caterers, mobile-bar operators, event planners, and brands — every piece fabricated to spec in our Long Island shop. Built to travel, built to brand, built to last.</p>
+    </div>
+  </section>
+
+  <section class="intro-block">
+    <div class="container">
+      <div class="intro-grid">
+        <h2>Custom-built — not rented.</h2>
+        <div>
+          <p>Most event-bar inventory comes from a rental catalog or a stock-piece importer. Ours doesn't. Every bar and serving piece South Shore builds is fabricated to spec in our Center Moriches shop, using sustainably-sourced and reclaimed hardwoods, with finishes built to survive repeat events and photograph cleanly under any light.</p>
+          <p>Our buyers are caterers building fleet inventory, mobile-bar operators commissioning custom front-of-house, planners chasing the photo-moment statement piece, and brands branding catering for activations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="audience-row">
+    <div class="container">
+      <div class="audience-grid">
+        <div class="audience-cell">
+          <h4>Caterers</h4>
+          <p>Durable fleet inventory built for repeat use. Branded face panels, swappable.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Mobile bar operators</h4>
+          <p>Custom front-of-house, tow-ready trailer builds, fleet expansion.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Brands & agencies</h4>
+          <p>One-off branded catering for activations. Tour-ready coffee carts, champagne walls.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Planners & weddings</h4>
+          <p>The piece the photos live on. Photo-moment statement bars and serving stations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="catalog-section">
+    <div class="container">
+      <div class="section-head">
+        <h2>What we make in this category.</h2>
+        <p style="font-size:14px; color:var(--ink-muted); max-width:32ch;">Named catalog pieces — fully customizable.</p>
+      </div>
+      <div class="catalog-grid">
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block"><span class="photo-caption">[ The Moriches Bar — reclaimed-wood front-of-house bar ]</span></div></div>
+          <h4>The Moriches Bar</h4>
+          <p class="catalog-spec">8 FT · RECLAIMED HARDWOOD · BRANDABLE FACE</p>
+          <p class="catalog-desc">Our anchor bar. Front-of-house, reclaimed-wood face with swappable branded panel. Photo-grade finish, locking casters, integrated speed-rail.</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt"><span class="photo-caption">[ Champagne wall — vertical display for flutes ]</span></div></div>
+          <h4>The Champagne Wall</h4>
+          <p class="catalog-spec">FREESTANDING · 60+ FLUTE CAPACITY · BRANDED</p>
+          <p class="catalog-desc">The piece that runs the room. Freestanding champagne display, configurable flute capacity, optional branded headboard.</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt-2"><span class="photo-caption">[ Grazing table — long charcuterie + cheese display ]</span></div></div>
+          <h4>The Grazing Table</h4>
+          <p class="catalog-spec">10 FT · MODULAR · FOOD-SAFE FINISH</p>
+          <p class="catalog-desc">Long-form charcuterie display, food-safe finish, modular ends for 8 / 10 / 12 ft configurations. Built to break down.</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block"><span class="photo-caption">[ Dessert tower — tiered display for desserts ]</span></div></div>
+          <h4>The Dessert Tower</h4>
+          <p class="catalog-spec">5 TIER · HARDWOOD + GLASS · LIGHTED</p>
+          <p class="catalog-desc">Tiered display for cake, dessert, and sweets stations. Hardwood frame, glass shelves, optional integrated lighting.</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt"><span class="photo-caption">[ Back-bar / bottle riser — wall-mounted bartender setup ]</span></div></div>
+          <h4>Back-Bar & Bottle Riser</h4>
+          <p class="catalog-spec">WALL-MOUNT OR FREESTANDING · LIT · BRANDED</p>
+          <p class="catalog-desc">The back of the bar. Tiered bottle display, integrated lighting, swappable brand graphic. Built to pair with The Moriches.</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt-2"><span class="photo-caption">[ Coffee / espresso cart — mobile brand activation cart ]</span></div></div>
+          <h4>The Coffee Cart</h4>
+          <p class="catalog-spec">MOBILE · WIRED · BRAND-WRAPPABLE</p>
+          <p class="catalog-desc">Mobile coffee + espresso cart for brand activations. Plug-and-play wired hardware, fully wrappable face for brand campaigns.</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="container">
+      <h2>Building catering inventory?</h2>
+      <a href="#contact" class="cta-button" data-nav="contact">Brief us on the piece <span class="arrow">→</span></a>
+      <p class="reply-line">Replies within one business day · Catalog or fully custom</p>
+    </div>
+  </section>
+
+</section>
+
+<!-- ============================================================
+     PAGE: CUSTOM DÉCOR
+     ============================================================ -->
+<section class="page" id="page-decor">
+
+  <section class="page-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-caption">[ Custom décor hero — sculptural ceremony arch or branded photo wall, installed ]</div>
+    <div class="page-hero-content">
+      <p class="eyebrow">Custom Décor</p>
+      <h1>We build custom décor for rooms that matter.</h1>
+      <p class="lead">One-of-a-kind décor pieces — sculptural backdrops, ceremony arches, branded photo walls, themed environments, and marquee installations — for weddings, events, and brand activations across the NYC tri-state.</p>
+    </div>
+  </section>
+
+  <section class="intro-block">
+    <div class="container">
+      <div class="intro-grid">
+        <h2>The one-offs that finish the room.</h2>
+        <div>
+          <p>Décor is the layer most fabrication shops don't take seriously and most prop-rental companies can't customize. We build it the way our furniture commissions are built — to spec, with finishes that photograph, with structure that lasts past the event.</p>
+          <p>Wedding planners, event designers, brand activations needing photo moments, and direct-to-client weddings all hire South Shore for the same reason: custom-built beats rented when the piece is the room.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="audience-row">
+    <div class="container">
+      <div class="audience-grid">
+        <div class="audience-cell">
+          <h4>Wedding planners</h4>
+          <p>Ceremony arches, photo backdrops, custom signage — built to the design.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Event designers</h4>
+          <p>Themed environments, statement focal pieces, room-defining installs.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Brand teams</h4>
+          <p>Branded décor for activations — photo walls, dimensional logos, themed sets.</p>
+        </div>
+        <div class="audience-cell">
+          <h4>Direct clients</h4>
+          <p>Weddings and private events where the piece needs to be one-of-one.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="catalog-section">
+    <div class="container">
+      <div class="section-head"><h2>What we make in this category.</h2></div>
+      <div class="catalog-grid">
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block"><span class="photo-caption">[ Ceremony arch — sculptural wood framework for weddings ]</span></div></div>
+          <h4>Ceremony & Statement Arches</h4>
+          <p class="catalog-spec">FREESTANDING · GREENERY-READY · TRANSPORT-SAFE</p>
+          <p class="catalog-desc">Ceremony arches in hardwood, painted MDF, or reclaimed-wood. Greenery anchor points pre-built, transport-safe joinery.</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt"><span class="photo-caption">[ Custom backdrop — branded or themed photo wall ]</span></div></div>
+          <h4>Custom Backdrops & Photo Walls</h4>
+          <p class="catalog-spec">8–12 FT · BRANDED OR THEMED · QUICK-ASSEMBLE</p>
+          <p class="catalog-desc">Branded or themed photo walls. 8–12 ft typical, freestanding, quick-assemble, photo-grade finishes.</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt-2"><span class="photo-caption">[ Marquee letter — light-up letterform display ]</span></div></div>
+          <h4>Marquee Letters & Numbers</h4>
+          <p class="catalog-spec">RENTAL OR PURCHASE · LIGHT-UP · TRANSPORTABLE</p>
+          <p class="catalog-desc">Light-up marquee letters and numbers — available as one-off custom builds or via our rental fleet (see <a href="#marquee" style="border-bottom:1px solid currentColor;">marquee rentals</a>).</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block"><span class="photo-caption">[ Welcome board / custom signage — entrance signage ]</span></div></div>
+          <h4>Welcome Boards & Signage</h4>
+          <p class="catalog-spec">DIMENSIONAL · BRANDED · FREESTANDING</p>
+          <p class="catalog-desc">Entrance signage, table signage, dimensional menus. Hand-finished, freestanding or wall-mount, branded to spec.</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt"><span class="photo-caption">[ Themed environment — installed set dressing for event ]</span></div></div>
+          <h4>Themed Environments</h4>
+          <p class="catalog-spec">FULL-ROOM · CUSTOM CONCEPT · INSTALL-INCLUDED</p>
+          <p class="catalog-desc">Full themed environment builds — concept-to-install, with on-site setup and strike. For brand activations and immersive events.</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-photo"><div class="photo-block alt-2"><span class="photo-caption">[ Custom wood wall — paneled cladding for events ]</span></div></div>
+          <h4>Custom Wood Walls & Cladding</h4>
+          <p class="catalog-spec">PANELIZED · REUSABLE · BRAND-READY</p>
+          <p class="catalog-desc">Panelized wood wall systems for event spaces. Reusable across events, brand-graphic compatible, transport-safe.</p>
+          <span class="tile-link">Customize a build <span class="arrow">→</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="container">
+      <h2>One-of-one piece in mind?</h2>
+      <a href="#contact" class="cta-button" data-nav="contact">Brief us on the piece <span class="arrow">→</span></a>
+      <p class="reply-line">Replies within one business day · Custom-built, not rented</p>
+    </div>
+  </section>
+
+</section>
+
+<!-- ============================================================
+     PAGE: WORK
+     ============================================================ -->
+<section class="page" id="page-work">
+
+  <section class="about-hero">
+    <div class="container">
+      <p class="eyebrow" style="margin-bottom:24px;">Selected Work</p>
+      <h1>Built for brands, agencies, venues, and the artists who tour them.</h1>
+    </div>
+  </section>
+
+  <section class="featured-work" style="border-top:1px solid var(--line);">
+    <div class="container">
+      <div class="work-grid">
+        <div class="work-item size-lg">
+          <div class="work-photo"><div class="photo-block"><span class="photo-caption">[ Brand activation install — anonymized for NDA ]</span></div></div>
+          <div class="work-meta"><div><h4>Hospitality Activation</h4><p>Northeast US · Q2 2025</p></div><span class="work-tag">Brand Activation</span></div>
+        </div>
+        <div class="work-item size-md">
+          <div class="work-photo"><div class="photo-block alt"><span class="photo-caption">[ Mobile bar — finished walnut + brass hardware ]</span></div></div>
+          <div class="work-meta"><div><h4>The Moriches Bar</h4><p>Catalog piece · 2026</p></div><span class="work-tag">Mobile Bar</span></div>
+        </div>
+        <div class="work-item size-sm">
+          <div class="work-photo"><div class="photo-block alt-2"><span class="photo-caption">[ DJ booth — touring build, on stage at night ]</span></div></div>
+          <div class="work-meta"><div><h4>Touring DJ Booth</h4><p>Brooklyn → Boston · 2026</p></div><span class="work-tag">DJ Booth</span></div>
+        </div>
+        <div class="work-item size-tall">
+          <div class="work-photo"><div class="photo-block"><span class="photo-caption">[ Pop-up retail buildout — modular shop install ]</span></div></div>
+          <div class="work-meta"><div><h4>Retail Fixture Program</h4><p>NYC pop-up · 2025</p></div><span class="work-tag">Pop-Up & Retail</span></div>
+        </div>
+        <div class="work-item size-tall">
+          <div class="work-photo"><div class="photo-block alt"><span class="photo-caption">[ Ceremony arch — sculptural wood + greenery ]</span></div></div>
+          <div class="work-meta"><div><h4>Ceremony Arch</h4><p>Hamptons wedding · 2025</p></div><span class="work-tag">Custom Décor</span></div>
+        </div>
+        <div class="work-item size-sm">
+          <div class="work-photo"><div class="photo-block alt-2"><span class="photo-caption">[ Branded photo wall — dimensional logo ]</span></div></div>
+          <div class="work-meta"><div><h4>Brand Photo Wall</h4><p>Press event · 2025</p></div><span class="work-tag">Brand Activation</span></div>
+        </div>
+        <div class="work-item size-md">
+          <div class="work-photo"><div class="photo-block"><span class="photo-caption">[ Champagne wall — vertical display with flutes ]</span></div></div>
+          <div class="work-meta"><div><h4>Champagne Wall</h4><p>Hospitality event · 2025</p></div><span class="work-tag">Catering</span></div>
+        </div>
+        <div class="work-item size-lg">
+          <div class="work-photo"><div class="photo-block alt"><span class="photo-caption">[ Stage build — full-perimeter LED skirt and riser ]</span></div></div>
+          <div class="work-meta"><div><h4>Branded Stage Build</h4><p>NYC venue · 2025</p></div><span class="work-tag">Stage</span></div>
+        </div>
+      </div>
+      <div style="margin-top:48px; padding-top:32px; border-top:1px solid var(--line); text-align:center;">
+        <p style="font-family:var(--font-mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-muted);">More work added as it ships — much of our portfolio lives behind agency NDA. Reach out for a private walk-through.</p>
+      </div>
+    </div>
+  </section>
+
+</section>
+
+<!-- ============================================================
+     PAGE: ABOUT (Variant A — approved)
+     ============================================================ -->
+<section class="page" id="page-about">
+
+  <section class="about-hero">
+    <div class="container">
+      <h1>We build the things brands roll into pop-ups, agencies roll onto stages, and artists roll out for openings.</h1>
+    </div>
+  </section>
+
+  <section class="about-body">
+    <div class="container">
+      <div class="about-body-grid">
+        <div class="about-photo-stack">
+          <div class="about-photo">
+            <div class="photo-block"><span class="photo-caption">[ Alex Vieco portrait — in shop, apron, working ]</span></div>
+          </div>
+          <div class="about-photo wide">
+            <div class="photo-block alt"><span class="photo-caption">[ Shop exterior — Center Moriches, NY ]</span></div>
+          </div>
+          <div class="about-photo wide">
+            <div class="photo-block alt-2"><span class="photo-caption">[ CNC routing in progress — shop-floor close-up ]</span></div>
+          </div>
+        </div>
+        <div class="about-prose">
+          <p>South Shore Woodworking is a custom fabrication shop in Center Moriches, on Long Island's south fork, ninety minutes from midtown Manhattan. <strong>Alex Vieco</strong> started the shop building one-of-a-kind furniture and salvaged-wood commissions for Long Island homeowners. The work taught him how to make almost anything out of wood, metal, and finish — and over the last several years, it has quietly turned into something different.</p>
+
+          <p>Today South Shore builds <strong>brand activation fabrications, experiential marketing sets, pop-up retail environments, custom retail displays, stage and DJ booth installations, mobile bars, catering pieces, and event sets</strong> for brand-activation agencies, experiential marketing firms, in-house corporate marketing teams, and the artists and DJs who tour them. We've shipped builds that travel between Brooklyn and Boston, branded environments that load in on a Friday and have to look perfect by 6 PM, and DJ booths that have to survive four shows on the road and still photograph cleanly for Instagram.</p>
+
+          <div class="about-quote">
+            <p>The reason agencies call a shop on Long Island instead of one in Brooklyn is the same reason brands call us instead of a national exhibit house: when you call, you reach the person running the saw.</p>
+          </div>
+
+          <p>There are no account managers between Alex and the build. There is no subcontracted second shop you've never met. The person designing the install is the person installing it. Most of our projects fall between <strong>$20,000 and $40,000</strong>, on timelines that respect the fact that load-in is a real date and you cannot reschedule it.</p>
+
+          <p>South Shore is fully equipped for CNC, hand-built millwork, finishing, and on-site install across NYC, Long Island, Brooklyn, northern New Jersey, and lower Connecticut. Larger jobs travel further on a case-by-case basis. We work directly with agency producers and brand-side marketing teams, and we work directly with the artists and creative directors who hire us without an agency in between. Marquee letter rentals — the original side of the business — are still available; the rest of the site is what we build now.</p>
+
+          <p>If you're scoping a brand activation, a pop-up, a stage, a retail environment, or a touring set and you want to talk to the maker, <strong>start a project below or download our capabilities one-pager</strong>.</p>
+
+          <div class="about-cta-row">
+            <a href="#contact" class="cta-button" data-nav="contact">Start a project <span class="arrow">→</span></a>
+            <a href="#contact" class="text-link" data-nav="contact">Download capabilities (PDF) <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-strip">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-cell">
+          <span class="num">10+</span>
+          <span class="label">Years building<br>custom work</span>
+        </div>
+        <div class="stat-cell">
+          <span class="num">$20–40K</span>
+          <span class="label">Typical project<br>range</span>
+        </div>
+        <div class="stat-cell">
+          <span class="num">3–8 wks</span>
+          <span class="label">Concept to<br>install</span>
+        </div>
+        <div class="stat-cell">
+          <span class="num">1</span>
+          <span class="label">Point of contact<br>(it's Alex)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="container">
+      <h2>Build with us.</h2>
+      <a href="#contact" class="cta-button" data-nav="contact">Start a project <span class="arrow">→</span></a>
+      <p class="reply-line">alex@southshorewoodworking.com · Replies within one business day</p>
+    </div>
+  </section>
+
+</section>
+
+<!-- ============================================================
+     PAGE: CONTACT
+     ============================================================ -->
+<section class="page" id="page-contact">
+
+  <section class="contact-page">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-intro">
+          <p class="eyebrow" style="margin-bottom:24px;">Start a project</p>
+          <h1>Send us anything. Deck, sketch, paragraph, PO.</h1>
+          <p>We respond inside one business day with feasibility, ballpark, and the questions we need answered. NDA-friendly.</p>
+
+          <ul class="contact-detail-list">
+            <li>
+              <span class="label">Email</span>
+              <span>alex@southshorewoodworking.com</span>
+            </li>
+            <li>
+              <span class="label">Phone</span>
+              <span>+1 (631) ███-████</span>
+            </li>
+            <li>
+              <span class="label">Shop</span>
+              <span>Center Moriches, NY 11934</span>
+            </li>
+            <li>
+              <span class="label">Service area</span>
+              <span>NYC tri-state · National on request</span>
+            </li>
+            <li>
+              <span class="label">Instagram</span>
+              <span>@southshore_woodworking</span>
+            </li>
+            <li>
+              <span class="label">Lead time</span>
+              <span>3–8 weeks typical</span>
+            </li>
+          </ul>
+        </div>
+
+        <form class="contact-form" onsubmit="event.preventDefault(); alert('Mockup form — would submit to Squarespace form storage in production.');">
+          <div class="field-row">
+            <div class="field">
+              <label for="cn">Your name</label>
+              <input type="text" id="cn" required>
+            </div>
+            <div class="field">
+              <label for="cco">Company / agency</label>
+              <input type="text" id="cco">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="ce">Email</label>
+              <input type="email" id="ce" required>
+            </div>
+            <div class="field">
+              <label for="cp">Phone (optional)</label>
+              <input type="tel" id="cp">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="ct">Project type</label>
+              <select id="ct" required>
+                <option value="">Select one</option>
+                <option>Brand activation</option>
+                <option>Pop-up / retail display</option>
+                <option>Stage or DJ booth</option>
+                <option>Mobile bar / catering piece</option>
+                <option>Custom décor</option>
+                <option>Marquee rental</option>
+                <option>Etsy / consumer order</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cb">Project budget</label>
+              <select id="cb">
+                <option value="">Select one</option>
+                <option>Under $5K (consumer / décor)</option>
+                <option>$5K–$20K</option>
+                <option>$20K–$40K</option>
+                <option>$40K–$75K</option>
+                <option>$75K+</option>
+                <option>Not sure yet</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="cm">Tell us about the project</label>
+            <textarea id="cm" placeholder="What you're building, when you need it, where it's installing, and anything else we should know."></textarea>
+          </div>
+          <div class="field">
+            <label for="ch">How did you hear about us?</label>
+            <input type="text" id="ch" placeholder="Google, IG, agency referral, Etsy, …">
+          </div>
+          <button type="submit">Send the brief <span class="arrow">→</span></button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</section>
+
+</main>
+
+<!-- ============================================================
+     FOOTER (persistent across all pages)
+     ============================================================ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand-block">
+        <a href="#home" class="brand" data-nav="home">South Shore Woodworking</a>
+        <p>Custom fabrication on Long Island for brand activations, pop-ups, stages, mobile bars, and custom décor.</p>
+        <div class="contact-info">
+          Center Moriches, NY · +1 (631) ███-████<br>
+          alex@southshorewoodworking.com
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>What we build</h5>
+        <ul>
+          <li><a href="#brand-activations" data-nav="brand-activations">Brand Activations</a></li>
+          <li><a href="#popups" data-nav="popups">Pop-Ups & Retail</a></li>
+          <li><a href="#stages" data-nav="stages">Stages & DJ Booths</a></li>
+          <li><a href="#mobile-bars" data-nav="mobile-bars">Mobile Bars & Catering</a></li>
+          <li><a href="#decor" data-nav="decor">Custom Décor</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Studio</h5>
+        <ul>
+          <li><a href="#about" data-nav="about">About</a></li>
+          <li><a href="#work" data-nav="work">Selected Work</a></li>
+          <li><a href="#about" data-nav="about">Process</a></li>
+          <li><a href="#contact" data-nav="contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Also</h5>
+        <ul>
+          <li><a href="https://www.etsy.com/shop/SouthShoreWoodwork" target="_blank" rel="noopener">Shop on Etsy ↗</a></li>
+          <li><a href="#decor" data-nav="decor">Marquee Letter Rentals</a></li>
+          <li><a href="#contact" data-nav="contact">Capabilities Deck (PDF)</a></li>
+          <li><a href="#about" data-nav="about">Journal</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 South Shore Woodworking · Center Moriches, NY · All trademarks and logos are the property of their respective owners and used here for identification purposes only.</p>
+      <div class="footer-social">
+        <a href="https://instagram.com/southshore_woodworking" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.etsy.com/shop/SouthShoreWoodwork" target="_blank" rel="noopener">Etsy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Theme banner (helpful for design review) -->
+<div class="theme-banner">
+  <span class="dot"></span>
+  <span id="themeBannerLabel">Warm theme · Hoffer-faithful</span>
+</div>
+
+<script>
+// ============================================================
+// SPA-LIKE PAGE ROUTING (hash-based)
+// ============================================================
+const PAGES = ['home','work','brand-activations','popups','stages','mobile-bars','decor','about','contact'];
+
+function showPage(id) {
+  if (!PAGES.includes(id)) id = 'home';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + id);
+  if (target) {
+    target.classList.add('active');
+    document.documentElement.setAttribute('data-page', id);
+  }
+  // active nav state
+  document.querySelectorAll('[data-nav]').forEach(a => {
+    a.classList.toggle('active', a.dataset.nav === id);
+  });
+  // close mobile menu if open
+  document.getElementById('mobileMenu').classList.remove('open');
+  // scroll to top
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  // title
+  const titleMap = {
+    'home':'South Shore Woodworking — Custom Fabrication on Long Island',
+    'work':'Selected Work — South Shore Woodworking',
+    'brand-activations':'Brand Activation Fabrication — South Shore Woodworking',
+    'popups':'Pop-Up Shop & Retail Display Fabrication — South Shore Woodworking',
+    'stages':'Stage & DJ Booth Design — South Shore Woodworking',
+    'mobile-bars':'Custom Mobile Bars & Catering Pieces — South Shore Woodworking',
+    'decor':'Custom Décor for Events & Brand Activations — South Shore Woodworking',
+    'about':'About — South Shore Woodworking',
+    'contact':'Start a project — South Shore Woodworking'
+  };
+  document.title = titleMap[id] || titleMap.home;
+}
+
+function handleHash() {
+  const hash = (location.hash || '#home').replace('#','');
+  showPage(hash);
+}
+
+document.addEventListener('click', (e) => {
+  const navLink = e.target.closest('[data-nav]');
+  if (navLink) {
+    e.preventDefault();
+    const id = navLink.dataset.nav;
+    history.pushState(null, '', '#' + id);
+    showPage(id);
+  }
+});
+
+window.addEventListener('popstate', handleHash);
+handleHash();
+
+// ============================================================
+// THEME TOGGLE
+// ============================================================
+const themeButtons = document.querySelectorAll('[data-theme-btn]');
+const bannerLabel = document.getElementById('themeBannerLabel');
+themeButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const theme = btn.dataset.themeBtn;
+    document.documentElement.setAttribute('data-theme', theme);
+    themeButtons.forEach(b => b.classList.toggle('active', b === btn));
+    bannerLabel.textContent = theme === 'warm'
+      ? 'Warm theme · Hoffer-faithful'
+      : 'Dark theme · Agency-grade brutalist';
+    try { localStorage.setItem('sswtheme', theme); } catch(e) {}
+  });
+});
+
+// restore theme
+try {
+  const saved = localStorage.getItem('sswtheme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    themeButtons.forEach(b => b.classList.toggle('active', b.dataset.themeBtn === saved));
+    bannerLabel.textContent = saved === 'warm'
+      ? 'Warm theme · Hoffer-faithful'
+      : 'Dark theme · Agency-grade brutalist';
+  }
+} catch(e) {}
+
+// ============================================================
+// STICKY HEADER SHRINK
+// ============================================================
+const header = document.getElementById('siteHeader');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 24);
+}, { passive: true });
+
+// ============================================================
+// MOBILE MENU
+// ============================================================
+const menuTrigger = document.getElementById('menuTrigger');
+const mobileMenu = document.getElementById('mobileMenu');
+const mobileClose = document.getElementById('mobileClose');
+menuTrigger.addEventListener('click', () => mobileMenu.classList.add('open'));
+mobileClose.addEventListener('click', () => mobileMenu.classList.remove('open'));
+</script>
+
+</body>
+</html>
